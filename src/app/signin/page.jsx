@@ -1,6 +1,20 @@
-import { FcGoogle } from 'react-icons/fc'
+import { redirect } from 'next/navigation'
 
-export default function SignIn () {
+import { getProviders } from 'next-auth/react'
+import { getServerSession } from 'next-auth'
+
+import AuthButton from '@/components/AuthButton'
+
+export default async function SignIn () {
+  const session = await getServerSession()
+  const providers = await getProviders()
+
+  session &&
+  redirect('/')
+
+  !providers &&
+    <div>Sign in is not available</div>
+
   return (
     <>
       <div className='flex flex-[1] w-full mt-6 mb-0 mx-auto py-0 px-8 items-center relative flex-col'>
@@ -11,13 +25,7 @@ export default function SignIn () {
           <h4 className='text-[#0000008f] mt-3 mb-8 mx-0 text-xs text-center'>
             Create a profile, follow other accounts, make your own videos, and more
           </h4>
-          <button className='w-full rounded-lg font-bold border border-solid border-[#1618231f] text-xs py-0 pl-4 flex align-middle items-center justify-center h-11 relative break-all whitespace-nowrap mb-3'>
-            <FcGoogle
-              size={22}
-              className='left-1.5 absolute flex'
-            />
-            Continue with Google
-          </button>
+          <AuthButton providers={providers} />
         </div>
       </div>
     </>
