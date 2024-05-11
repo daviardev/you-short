@@ -42,7 +42,7 @@ export default function Footer () {
             <span>Inbox</span>
           </Link>
           <Link
-            href='/profile[id]'
+            href='/signin'
             className='flex flex-col items-center'
           >
             <FaRegUser size={22} />
