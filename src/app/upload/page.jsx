@@ -1,12 +1,12 @@
 'use client'
 
 import { useState, useEffect } from 'react'
+import { useRouter } from 'next/navigation'
 
 import { getSession } from 'next-auth/react'
 
 import { AiOutlineCheckCircle } from 'react-icons/ai'
 import { BiCloudUpload } from 'react-icons/bi'
-import { redirect } from 'next/navigation'
 
 export default function Upload () {
   const [caption, setCaption] = useState('')
@@ -14,10 +14,13 @@ export default function Upload () {
 
   const [file, setFile] = useState(null)
 
+  const router = useRouter()
+
   const fetchData = async () => {
     const session = await getSession()
 
-    !session && redirect('/signin')
+    !session &&
+    router.push('/signin')
   }
 
   useEffect(() => {
