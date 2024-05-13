@@ -1,26 +1,28 @@
 'use client'
 
 import { useState, useEffect } from 'react'
-import { redirect } from 'next/navigation'
 
-import UploadServer from '@/components/Upload'
+import { getSession } from 'next-auth/react'
 
 import { AiOutlineCheckCircle } from 'react-icons/ai'
 import { BiCloudUpload } from 'react-icons/bi'
+import { redirect } from 'next/navigation'
 
 export default function Upload () {
   const [caption, setCaption] = useState('')
   const [fileDisplay, setFileDisplay] = useState('')
 
   const [file, setFile] = useState(null)
-  const [session, setSession] = useState(null)
+
+  const fetchData = async () => {
+    const session = await getSession()
+
+    !session && redirect('/signin')
+  }
 
   useEffect(() => {
-    UploadServer().then(session => setSession(session))
+    fetchData()
   }, [])
-
-  !session &&
-  redirect('/signin')
 
   const OnChange = e => {
     const files = e.target.files
