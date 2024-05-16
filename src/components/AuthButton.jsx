@@ -8,7 +8,7 @@ export default function AuthButton ({ providers }) {
   return Object.values(providers).map(provider => (
     <div key={provider.name}>
       <button
-        onClick={() => signIn(provider.id)}
+        onClick={() => signIn(provider.id, { callbackUrl: '/' })}
         type='button'
         className='
             w-full
