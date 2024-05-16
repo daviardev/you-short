@@ -1,35 +1,13 @@
 'use client'
 
 import Image from 'next/image'
-import { useRouter } from 'next/navigation'
-import { useEffect, useState } from 'react'
 
-import { getSession } from 'next-auth/react'
 import Loader from '@/components/Load'
 
+import useSession from '@/hooks/useSession'
+
 export default function Home () {
-  const [session, setSession] = useState(null)
-  const [loading, setLoading] = useState(false)
-
-  const router = useRouter()
-
-  useEffect(() => {
-    const VerifySession = async () => {
-      const session = await getSession()
-
-      if (!session) {
-        router.push('/signin')
-      } else {
-        setSession(session)
-        setLoading(false)
-      }
-    }
-
-    VerifySession()
-  }, [])
-
-  loading &&
-    router.push('/signin')
+  const { session } = useSession()
 
   return (
     <>

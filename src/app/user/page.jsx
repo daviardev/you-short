@@ -2,49 +2,19 @@
 
 import Image from 'next/image'
 
-import { useRouter } from 'next/navigation'
-import { useState, useEffect } from 'react'
-
-import { getSession, signOut } from 'next-auth/react'
-
+import { useState } from 'react'
 import { Dots } from '@/components/SvgConverted'
 
 import { GoSignOut } from 'react-icons/go'
+
+import useSession from '@/hooks/useSession'
+
 import Loader from '@/components/Load'
 
 export default function User () {
-  const [session, setSession] = useState(null)
-
-  const [loading, setLoading] = useState(false)
   let [showMenu, setShowMenu] = useState(false)
 
-  const router = useRouter()
-
-  const LogOut = async () => {
-    await signOut()
-    router.push('/signin')
-    setSession(false)
-    setLoading(true)
-    setShowMenu(false)
-  }
-
-  useEffect(() => {
-    const VerifySession = async () => {
-      const session = await getSession()
-
-      if (!session) {
-        router.push('/signin')
-      } else {
-        setSession(session)
-        setLoading(false)
-      }
-    }
-
-    VerifySession()
-  }, [])
-
-  loading &&
-  router.push('/signin')
+  const { session, logout } = useSession()
 
   return (
     <>
@@ -62,7 +32,7 @@ export default function User () {
               {showMenu
                 ? (
                   <div className='absolute bg-white rounded-lg py-1.5 w-[200px] shadow-xl border top-[40px] right-2'>
-                    <button onClick={() => LogOut()} className='flex items-center justify-start w-full py-3 px-1.5 hover:bg-gray-100 cursor-pointer'>
+                    <button onClick={() => logout()} className='flex items-center justify-start w-full py-3 px-1.5 hover:bg-gray-100 cursor-pointer'>
                       <GoSignOut size={20} />
                       <span className='pl-2 font-semibold text-sm'>Log out</span>
                     </button>
