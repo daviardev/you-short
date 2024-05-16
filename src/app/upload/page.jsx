@@ -7,6 +7,7 @@ import { getSession } from 'next-auth/react'
 
 import { AiOutlineCheckCircle } from 'react-icons/ai'
 import { BiCloudUpload } from 'react-icons/bi'
+import Loader from '@/components/Load'
 
 export default function Upload () {
   const [caption, setCaption] = useState('')
@@ -89,8 +90,8 @@ export default function Upload () {
 
   return (
     <>
-      {session &&
-        (
+      {session
+        ? (
           <div className='py-12 px-2.5'>
             <h1 className='text-[18px] font-semibold'>Load video</h1>
             <h2 className='text-gray-400 mt-1 text-[14px]'>Post a video on your account</h2>
@@ -200,7 +201,8 @@ export default function Upload () {
                 </div>
                 )}
           </div>
-        )}
+          )
+        : <Loader />}
     </>
   )
 }

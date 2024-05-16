@@ -10,6 +10,7 @@ import { getSession, signOut } from 'next-auth/react'
 import { Dots } from '@/components/SvgConverted'
 
 import { GoSignOut } from 'react-icons/go'
+import Loader from '@/components/Load'
 
 export default function User () {
   const [session, setSession] = useState(null)
@@ -47,8 +48,8 @@ export default function User () {
 
   return (
     <>
-      {session &&
-        (
+      {session
+        ? (
           <div className='flex inset-0 flex-col relative flex-1 text-[rgb(22,24,35)] '>
             <div className='leading-6 top-0 p-0 flex justify-center h-9 border-b sticky z-30 border-[rgba(22,24,35,.2)]'>
               <h3 className='flex-shrink-0 text-lg font-bold whitespace-nowrap text-ellipsis'>{session.user?.name}</h3>
@@ -104,7 +105,8 @@ export default function User () {
               <p className='mb-3'>Description about me goes here</p>
             </div>
           </div>
-        )}
+          )
+        : <Loader />}
     </>
   )
 }

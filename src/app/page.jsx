@@ -5,6 +5,7 @@ import { useRouter } from 'next/navigation'
 import { useEffect, useState } from 'react'
 
 import { getSession } from 'next-auth/react'
+import Loader from '@/components/Load'
 
 export default function Home () {
   const [session, setSession] = useState(null)
@@ -32,11 +33,10 @@ export default function Home () {
 
   return (
     <>
-      {session &&
-        (
+      {session
+        ? (
           <div>
             Welcome {session?.user?.name} show the content
-
             <Image
               src={session?.user?.image}
               alt={session?.user?.name}
@@ -45,7 +45,8 @@ export default function Home () {
               className='rounded-full object-contain'
             />
           </div>
-        )}
+          )
+        : <Loader />}
     </>
   )
 }
