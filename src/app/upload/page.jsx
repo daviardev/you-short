@@ -9,6 +9,11 @@ import useSession from '@/hooks/useSession'
 
 import Loader from '@/components/Load'
 
+import { db, storage } from '@/firebase'
+
+import { collection, addDoc } from 'firebase/firestore'
+import { ref, uploadBytes, getDownloadURL } from 'firebase/storage'
+
 export default function Upload () {
   const [caption, setCaption] = useState('')
   const [fileDisplay, setFileDisplay] = useState('')
@@ -17,56 +22,70 @@ export default function Upload () {
 
   const { session } = useSession()
 
-  const OnChange = e => {
+  const onChange = e => {
     const files = e.target.files
 
     if (files && files.length > 0) {
       const file = files[0]
       const fileURL = URL.createObjectURL(file)
-      setFileDisplay({
-        name: file.name,
-        url: fileURL
-      })
+      setFileDisplay(fileURL)
       setFile(file)
     }
   }
 
-  const HandleDrop = e => {
+  const handleDrop = e => {
     e.preventDefault()
-
     const file = e.dataTransfer.files[0]
-
     if (file) {
       const fileURL = URL.createObjectURL(file)
-      setFileDisplay({
-        name: file.name,
-        url: fileURL
-      })
+      setFileDisplay(fileURL)
       setFile(file)
     }
   }
 
-  const HandleDragOver = e => {
-    e.preventDefault()
-  }
+  const handleDragOver = e => e.preventDefault()
+  const handleDragEnter = e => e.preventDefault()
+  const handleDragLeave = e => e.preventDefault()
 
-  const HandleDragEnter = e => {
-    e.preventDefault()
-  }
-
-  const HandleDragLeave = e => {
-    e.preventDefault()
-  }
-
-  const Discard = () => {
+  const discard = () => {
     setFileDisplay('')
     setFile(null)
     setCaption('')
   }
 
-  const DiscardVideo = () => {
+  const discardVideo = () => {
     setFileDisplay('')
     setFile(null)
+  }
+
+  const postVideo = async () => {
+    if (!file || !caption.trim()) return
+
+    const { uid, name, tag, image } = session.user
+
+    const storageRef = ref(storage, `videos/${uid}/${file.name}`)
+
+    try {
+      await uploadBytes(storageRef, file)
+      const videoURL = await getDownloadURL(storageRef)
+
+      await addDoc(collection(db, 'videos'), {
+        id: uid,
+        author: name,
+        description: caption,
+        likes: 0,
+        comments: 0,
+        shares: 0,
+        songName: `original sound - ${tag}`,
+        avatar: image,
+        albumCover: image,
+        src: videoURL
+      })
+
+      discard()
+    } catch (error) {
+      console.error('Error uploading video: ', error)
+    }
   }
 
   return (
@@ -80,52 +99,38 @@ export default function Upload () {
               ? (
                 <label
                   htmlFor='fileInput'
-                  onDrop={HandleDrop}
-                  onDragOver={HandleDragOver}
-                  onDragEnter={HandleDragEnter}
-                  onDragLeave={HandleDragLeave}
+                  onDrop={handleDrop}
+                  onDragOver={handleDragOver}
+                  onDragEnter={handleDragEnter}
+                  onDragLeave={handleDragLeave}
                   className='
-                        flex
-                        flex-row
-                        items-center
-                        justify-start
-                        mx-auto
-                        mt-2
-                        mb-4
-                        w-full
-                        h-[100px]
-                        text-center
-                        p-2
-                        border-2
-                        border-dashed
-                        border-gray-300
-                        rounded-lg
-                        hover:bg-gray-100
-                        cursor-pointer
-                    '
+                flex
+                flex-row
+                items-center
+                justify-start
+                mx-auto
+                mt-2
+                mb-4
+                w-full
+                h-[100px]
+                text-center
+                p-2
+                border-2
+                border-dashed
+                border-gray-300
+                rounded-lg
+                hover:bg-gray-100
+                cursor-pointer
+              '
                 >
-                  <BiCloudUpload
-                    size={30}
-                    color='#b3b3b1'
-                  />
+                  <BiCloudUpload size={30} color='#b3b3b1' />
                   <div className='ml-4'>
                     <p className='text-[12px]'>Select the video to load</p>
                     <p className='text-gray-500 text-[10px]'>Or drag and drop file</p>
                   </div>
-
                   <label
                     htmlFor='fileInput'
-                    className='
-                  ml-4
-                  p-1
-                  mt-0
-                  text-white
-                  text-[13px]
-                  bg-[#f02c56]
-                  rounded-sm
-                  cursor-pointer
-                  leading-3
-                '
+                    className='ml-4 p-1 mt-0 text-white text-[13px] bg-[#f02c56] rounded-sm cursor-pointer leading-3'
                   >
                     Select a file
                   </label>
@@ -134,7 +139,7 @@ export default function Upload () {
                     type='file'
                     hidden
                     accept='video/*'
-                    onChange={OnChange}
+                    onChange={onChange}
                   />
                 </label>
                 )
@@ -142,16 +147,12 @@ export default function Upload () {
                 <div className='mx-auto mt-2 mb-4 w-full p-2 rounded-2xl relative'>
                   <div className='absolute flex items-center justify-between rounded-xl border w-[94%] p-2 border-gray-300'>
                     <div className='flex items-center truncate'>
-                      <AiOutlineCheckCircle
-                        size={16}
-                        className='min-w-[16px]'
-                      />
-                      <span className='text-[11px] pl-1 truncate text-ellipsis'>{file ? file.name : ''}</span>
+                      <AiOutlineCheckCircle size={16} className='min-w-[16px]' />
+                      <span className='text-[11px] pl-1 truncate text-ellipsis'>
+                        {file ? file.name : ''}
+                      </span>
                     </div>
-                    <button
-                      onClick={() => DiscardVideo()}
-                      className='text-[11px] ml-6 font-semibold'
-                    >
+                    <button onClick={discardVideo} className='text-[11px] ml-6 font-semibold'>
                       Change
                     </button>
                   </div>
@@ -171,19 +172,33 @@ export default function Upload () {
                     </div>
                     <div className='flex gap-3'>
                       <button
-                        onClick={() => Discard()}
+                        onClick={discard}
                         className='px-4 w-full py-2.5 mt-8 border text-[16px] hover:bg-gray-100 rounded-sm'
                       >
                         Discard
                       </button>
-                      <button className='px-4 w-full py-2.5 mt-8 border text-[16px] text-white bg-[#f02c56] rounded-sm'>Post</button>
+                      <button
+                        onClick={postVideo}
+                        className='px-4 w-full py-2.5 mt-8 border text-[16px] text-white bg-[#f02c56] rounded-sm'
+                      >
+                        Post
+                      </button>
                     </div>
                   </div>
+                  <video
+                    autoPlay
+                    loop
+                    muted
+                    className='absolute rounded-xl object-cover z-10 p-[13px] w-full h-full'
+                    src={fileDisplay}
+                  />
                 </div>
                 )}
           </div>
           )
-        : <Loader />}
+        : (
+          <Loader />
+          )}
     </>
   )
 }
