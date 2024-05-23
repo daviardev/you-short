@@ -5,7 +5,7 @@ import Image from 'next/image'
 
 import { Heart, Comment, Share } from './SvgConverted'
 
-export default function Actions ({ likes, comments, shares, author, avatar }) {
+export default function Actions ({ likes, comments, shares, author, avatar, videoId }) {
   return (
     <>
       <aside className='flex flex-col items-center absolute bottom-[50px] right-1 z-20'>
@@ -48,10 +48,12 @@ export default function Actions ({ likes, comments, shares, author, avatar }) {
             <Comment width={30} />
             <span className='text-sm' title='comment'>{comments}</span>
           </button>
-          <button className='text-white flex flex-col justify-center items-center mb-1 bg-transparent border-none'>
-            <Share width={30} />
-            <span className='text-sm' title='share'>{shares}</span>
-          </button>
+          <Link href={`/video/${videoId}`}>
+            <button className='text-white flex flex-col justify-center items-center mb-1 bg-transparent border-none'>
+              <Share width={30} />
+              <span className='text-sm' title='share'>{shares}</span>
+            </button>
+          </Link>
         </div>
       </aside>
     </>

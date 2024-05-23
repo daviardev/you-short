@@ -7,7 +7,7 @@ import { useInView } from 'react-intersection-observer'
 import Actions from './Actions'
 import VideoDescription from './VideoDescription'
 
-export default function VideoPlayer ({ likes, comments, shares, author, description, albumCover, songName, src, avatar }) {
+export default function VideoPlayer ({ likes, comments, shares, author, description, albumCover, songName, src, avatar, videoId }) {
   const video = useRef(null)
   const { ref, inView } = useInView({
     threshold: 0.5
@@ -60,6 +60,7 @@ export default function VideoPlayer ({ likes, comments, shares, author, descript
           author={author}
           avatar={avatar}
           comments={comments}
+          videoId={videoId}
         />
 
         <VideoDescription
