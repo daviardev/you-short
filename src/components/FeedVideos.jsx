@@ -7,8 +7,6 @@ import { collection, getDocs } from 'firebase/firestore'
 
 import VideoPlayer from './VideoPlayer'
 
-const generateUniqueKey = (video) => `${video.id}-${video.src}`
-
 export default function FeedVideos () {
   const [videos, setVideos] = useState([])
 
@@ -27,8 +25,8 @@ export default function FeedVideos () {
   }, [])
 
   return (videos.map(video => (
-    <div key={generateUniqueKey(video)} className='w-full h-full snap-center'>
-      <VideoPlayer {...video} />
+    <div key={video.id} className='w-full h-full snap-center'>
+      <VideoPlayer {...video} videoId={video.id} />
     </div>
   )))
 }
