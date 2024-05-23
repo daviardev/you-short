@@ -61,16 +61,12 @@ export default function Upload () {
   const postVideo = async () => {
     if (!file || !caption.trim()) return
 
-    const { uid, name, tag, image } = session.user
-
-    const storageRef = ref(storage, `videos/${uid}/${file.name}`)
+    const { name, tag, image } = session.user
 
     try {
-      await uploadBytes(storageRef, file)
-      const videoURL = await getDownloadURL(storageRef)
+      const videoURL = await uploadVideo(file)
 
       await addDoc(collection(db, 'videos'), {
-        id: uid,
         author: name,
         description: caption,
         likes: 0,
@@ -81,10 +77,21 @@ export default function Upload () {
         albumCover: image,
         src: videoURL
       })
-
       discard()
     } catch (error) {
       console.error('Error uploading video: ', error)
+    }
+  }
+
+  const uploadVideo = async (file) => {
+    try {
+      const storageRef = ref(storage, `videos/${file.name}`)
+
+      await uploadBytes(storageRef, file)
+      return await getDownloadURL(storageRef)
+    } catch (error) {
+      console.error('Error uploading video: ', error)
+      throw error
     }
   }
 
