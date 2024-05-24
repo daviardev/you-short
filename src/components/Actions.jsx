@@ -29,16 +29,8 @@ export default function Actions ({ likes, comments, shares, author, avatar, vide
         const videoDoc = await getDoc(doc(db, 'videos', videoId))
         if (videoDoc.exists()) {
           const videoData = videoDoc.data()
-          if (videoData.likedBy && videoData.likedBy.includes(userId)) {
-            setUserHasLiked(true)
-          } else {
-            setUserHasLiked(false)
-          }
-          if (videoData.sharedBy && videoData.sharedBy.includes(userId)) {
-            setUserHasShare(true)
-          } else {
-            setUserHasShare(false)
-          }
+          setUserHasLiked(videoData.likedBy?.includes(userId) ?? false)
+          setUserHasShare(videoData.sharedBy?.includes(userId) ?? false)
         }
       }
     }
@@ -129,7 +121,7 @@ export default function Actions ({ likes, comments, shares, author, avatar, vide
         <Link href={`/video/${videoId}`}>
           <button onClick={handleShare} className='text-white flex flex-col justify-center items-center mb-1 bg-transparent border-none'>
             <Share width={30} />
-            <span className='text-sm' title='share'>{shares}</span>
+            <span className='text-sm' title='share'>{shareCount}</span>
           </button>
         </Link>
       </div>
