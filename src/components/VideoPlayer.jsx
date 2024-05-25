@@ -5,6 +5,7 @@ import { useRef, useEffect } from 'react'
 import { useInView } from 'react-intersection-observer'
 
 import Actions from './Actions'
+import Comments from './Comments'
 import VideoDescription from './VideoDescription'
 
 export default function VideoPlayer ({ likes, comments, shares, author, description, albumCover, songName, src, avatar, videoId }) {
@@ -62,6 +63,8 @@ export default function VideoPlayer ({ likes, comments, shares, author, descript
           comments={comments}
           videoId={videoId}
         />
+
+        <Comments />
 
         <VideoDescription
           albumCover={albumCover}
