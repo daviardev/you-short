@@ -12,7 +12,7 @@ import useSession from '@/hooks/useSession'
 
 import { Heart, Comment, Share } from './SvgConverted'
 
-export default function Actions ({ likes, comments, shares, author, avatar, videoId }) {
+export default function Actions ({ likes, comments, shares, author, avatar, videoId, onShowComments }) {
   const { session } = useSession()
 
   const userId = session?.user?.uid
@@ -114,7 +114,10 @@ export default function Actions ({ likes, comments, shares, author, avatar, vide
           />
           <span className='text-sm' title='like'>{likeCount}</span>
         </button>
-        <button className='text-white flex flex-col justify-center items-center mb-1 bg-transparent border-none'>
+        <button
+          onClick={onShowComments}
+          className='text-white flex flex-col justify-center items-center mb-1 bg-transparent border-none'
+        >
           <Comment width={30} />
           <span className='text-sm' title='comment'>{comments}</span>
         </button>

@@ -1,6 +1,6 @@
 'use client'
 
-import { useRef, useEffect } from 'react'
+import { useRef, useEffect, useState } from 'react'
 
 import { useInView } from 'react-intersection-observer'
 
@@ -9,6 +9,8 @@ import Comments from './Comments'
 import VideoDescription from './VideoDescription'
 
 export default function VideoPlayer ({ likes, comments, shares, author, description, albumCover, songName, src, avatar, videoId }) {
+  const [showModalComment, setShowModalComment] = useState(false)
+
   const video = useRef(null)
   const { ref, inView } = useInView({
     threshold: 0.5
@@ -25,6 +27,14 @@ export default function VideoPlayer ({ likes, comments, shares, author, descript
       videoElement.pause()
     }
   }, [inView])
+
+  const hideComments = () => {
+    setShowModalComment(false)
+  }
+
+  const showComments = () => {
+    setShowModalComment(true)
+  }
 
   const handlePlay = () => {
     const { current: videoElement } = video
@@ -62,9 +72,15 @@ export default function VideoPlayer ({ likes, comments, shares, author, descript
           avatar={avatar}
           comments={comments}
           videoId={videoId}
+          onShowComments={showComments}
         />
 
-        <Comments />
+        {showModalComment && (
+          <Comments
+            onHide={hideComments}
+            comments={comments}
+          />
+        )}
 
         <VideoDescription
           albumCover={albumCover}
