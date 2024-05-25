@@ -13,7 +13,7 @@ export default function RootLayout ({ children }) {
     <html lang='en'>
       <body>
         <div className='shadow-filter'>
-          <main className='flex bg-[url(/images/iphone.webp)] bg-no-repeat bg-contain w-[320px] h-[630px] relative'>
+          <main className='flex bg-[url(/images/iphone.webp)] bg-no-repeat bg-contain w-[316px] h-[630px] relative'>
             <section className='w-full rounded-[32px] flex gap-3 flex-col relative px-1.5 py-4 m-6'>
               <div className='absolute bg-white inset-0 -z-10 rounded-[32px]' />
               <Header />
