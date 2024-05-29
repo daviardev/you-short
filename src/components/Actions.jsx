@@ -2,26 +2,24 @@
 
 import Link from 'next/link'
 import Image from 'next/image'
-
 import { useState, useEffect } from 'react'
 
 import { db } from '@/firebase'
-import { doc, updateDoc, arrayUnion, arrayRemove, getDoc } from 'firebase/firestore'
+import { doc, updateDoc, arrayUnion, arrayRemove, getDoc, collection, onSnapshot } from 'firebase/firestore'
 
 import useSession from '@/hooks/useSession'
 
 import { Heart, Comment, Share } from './SvgConverted'
 
-export default function Actions ({ likes, comments, shares, author, avatar, videoId, onShowComments }) {
+export default function Actions ({ likes, shares, author, avatar, videoId, onShowComments }) {
   const { session } = useSession()
-
   const userId = session?.user?.uid
 
   const [likeCount, setLikeCount] = useState(likes)
   const [userHasLiked, setUserHasLiked] = useState(false)
-
   const [shareCount, setShareCount] = useState(shares)
   const [userHasShare, setUserHasShare] = useState(false)
+  const [commentCount, setCommentCount] = useState(0)
 
   useEffect(() => {
     const checkIfUserInteracted = async () => {
@@ -37,23 +35,48 @@ export default function Actions ({ likes, comments, shares, author, avatar, vide
     checkIfUserInteracted()
   }, [videoId, userId])
 
+  useEffect(() => {
+    if (!videoId) return
+
+    const commentsRef = collection(db, 'videos', videoId, 'comments')
+    const unsubscribe = onSnapshot(commentsRef, snapshot => {
+      setCommentCount(snapshot.size)
+    })
+
+    return () => unsubscribe()
+  }, [videoId])
+
+  const updateProfileLikes = async (authorId, increment) => {
+    const userRef = doc(db, 'users', authorId)
+    const userDoc = await getDoc(userRef)
+    if (userDoc.exists()) {
+      const currentLikes = userDoc.data().likes || 0
+      await updateDoc(userRef, {
+        likes: currentLikes + increment
+      })
+    }
+  }
+
   const handleLike = async () => {
     if (!userId) return
 
     const videoRef = doc(db, 'videos', videoId)
+    const authorId = author
 
     if (userHasLiked) {
       await updateDoc(videoRef, {
         likes: likeCount - 1,
         likedBy: arrayRemove(userId)
       })
-      setLikeCount(likeCount - 1)
+      await updateProfileLikes(authorId, -1)
+      setLikeCount(Math.max(likeCount - 1, 0))
       setUserHasLiked(false)
     } else {
       await updateDoc(videoRef, {
         likes: likeCount + 1,
         likedBy: arrayUnion(userId)
       })
+      await updateProfileLikes(authorId, 1)
       setLikeCount(likeCount + 1)
       setUserHasLiked(true)
     }
@@ -119,7 +142,7 @@ export default function Actions ({ likes, comments, shares, author, avatar, vide
           className='text-white flex flex-col justify-center items-center mb-1 bg-transparent border-none'
         >
           <Comment width={30} />
-          <span className='text-sm' title='comment'>{comments}</span>
+          <span className='text-sm' title='comment'>{commentCount}</span>
         </button>
         <Link href={`/video/${videoId}`}>
           <button onClick={handleShare} className='text-white flex flex-col justify-center items-center mb-1 bg-transparent border-none'>
