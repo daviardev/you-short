@@ -61,13 +61,14 @@ export default function Upload () {
   const postVideo = async () => {
     if (!file || !caption.trim()) return
 
-    const { name, tag, image } = session.user
+    const { name, tag, image, uid } = session.user
 
     try {
       const videoURL = await uploadVideo(file)
 
       await addDoc(collection(db, 'videos'), {
         author: name,
+        userId: uid,
         description: caption,
         likes: 0,
         comments: 0,
@@ -75,7 +76,8 @@ export default function Upload () {
         songName: `original sound - ${tag}`,
         avatar: image,
         albumCover: image,
-        src: videoURL
+        src: videoURL,
+        timeStamp: Date.now()
       })
       discard()
     } catch (error) {
