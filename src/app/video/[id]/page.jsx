@@ -11,9 +11,7 @@ import { doc, getDoc } from 'firebase/firestore'
 export default function VideoPage () {
   const [video, setVideo] = useState(null)
 
-  const params = useParams()
-
-  const { id } = params
+  const { id } = useParams()
 
   useEffect(() => {
     const fetchVideo = async () => {
@@ -22,7 +20,11 @@ export default function VideoPage () {
           const docRef = doc(db, 'videos', id)
           const docSnap = await getDoc(docRef)
           if (docSnap.exists()) {
-            setVideo({ id: docSnap.id, ...docSnap.data() })
+            const videoData = docSnap.data()
+            setVideo({
+              id: docSnap.id,
+              ...videoData
+            })
           } else {
             setVideo(null)
           }
@@ -42,12 +44,12 @@ export default function VideoPage () {
   }
 
   if (video === null) {
-    return <div>Not found video.</div>
+    return <div>Video not found.</div>
   }
 
   return (
-    <div className='w-full h-full snap-center'>
-      <VideoPlayer {...video} id={video.id} />
+    <div className='relative w-full h-full snap-center'>
+      <VideoPlayer {...video} videoId={video.id} />
     </div>
   )
 }
