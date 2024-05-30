@@ -5,7 +5,7 @@ import { NotFound } from '@/components/SvgConverted'
 export default function NotFoundPage () {
   return (
     <div className='flex flex-col'>
-      <div className='flex-[1,1,auto] flex flex-col items-center justify-center text-center my-0 mx-auto'>
+      <div className='flex-[1,1,auto] flex flex-col items-center justify-center text-center my-20 mx-auto'>
         <NotFound />
         <p className='font-bold text-[rgb(22,24,35)] text-2xl mt-6'>
           Page not available
