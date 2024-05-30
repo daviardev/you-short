@@ -78,7 +78,7 @@ export default function VideoPlayer ({ likes, comments, shares, author, descript
         {showModalComment && (
           <Comments
             onHide={hideComments}
-            comments={comments}
+            videoId={videoId}
           />
         )}
 
