@@ -3,8 +3,9 @@
 import { useState, useEffect } from 'react'
 
 import { db } from '@/firebase'
-import { collection, getDocs } from 'firebase/firestore'
+import { collection, getDocs, query, orderBy } from 'firebase/firestore'
 
+import NotVideos from './NotVideos'
 import VideoPlayer from './VideoPlayer'
 
 export default function FeedVideos () {
@@ -12,7 +13,9 @@ export default function FeedVideos () {
 
   useEffect(() => {
     const fetchVideos = async () => {
-      const querySnapshot = await getDocs(collection(db, 'videos'))
+      const q = query(collection(db, 'videos'), orderBy('timeStamp', 'desc'))
+
+      const querySnapshot = await getDocs(q)
       const videoData = querySnapshot.docs.map(doc => ({
         id: doc.id,
         ...doc.data()
@@ -24,9 +27,19 @@ export default function FeedVideos () {
     fetchVideos()
   }, [])
 
-  return (videos.map(video => (
-    <div key={video.id} className='w-full h-full snap-center'>
-      <VideoPlayer {...video} videoId={video.id} />
-    </div>
-  )))
+  return (
+    <>
+      {videos.length
+        ? (
+            videos.map(video => (
+              <div key={video.id} className='w-full h-full snap-center'>
+                <VideoPlayer {...video} videoId={video.id} />
+              </div>
+            ))
+          )
+        : (
+          <NotVideos />
+          )}
+    </>
+  )
 }
