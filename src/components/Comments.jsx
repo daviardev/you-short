@@ -102,6 +102,7 @@ export default function Comments ({ onHide, videoId }) {
                       videoId={videoId}
                       commenterId={comment.commenterId}
                       onDeleteComment={handleDeleteComment}
+                      timeStamp={comment.timeStamp}
                     />
                   ))
                   : (

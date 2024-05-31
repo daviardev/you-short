@@ -6,14 +6,19 @@ import { db } from '@/firebase'
 import { doc, updateDoc, arrayUnion, arrayRemove } from 'firebase/firestore'
 
 import useSession from '@/hooks/useSession'
+import useTimeAgo from '@/hooks/useTimeAgo'
+import useDateTimeFormat from '@/hooks/useDateTimeFormat'
 
 import { FiFlag } from 'react-icons/fi'
 import { FaRegTrashAlt } from 'react-icons/fa'
 import { HiOutlineHeart, HiMiniHeart } from 'react-icons/hi2'
 
-export default function CommentCard ({ author, avatar, comment, likesComment, likedBy, commentId, videoId, commenterId, onDeleteComment }) {
+export default function CommentCard ({ author, avatar, comment, likesComment, likedBy, commentId, videoId, commenterId, onDeleteComment, timeStamp }) {
   const { session } = useSession()
   const id = session?.user?.uid
+
+  const timeago = useTimeAgo(timeStamp)
+  const timestampFormated = useDateTimeFormat(timeStamp)
 
   const [likeCount, setLikeCount] = useState(likesComment)
 
@@ -75,14 +80,15 @@ export default function CommentCard ({ author, avatar, comment, likesComment, li
             className='text-start whitespace-pre-line text-[15px] leading-[18px] pt-1'
           >
             {comment}
-            <span
+            <time
+              title={timestampFormated}
               style={{
                 wordBreak: 'break-word'
               }}
               className='text-[rgba(22,24,35,.5)] ms-1 whitespace-pre-line text-[15px] leading-[18px] text-start'
             >
-              3m ago
-            </span>
+              {timeago}
+            </time>
           </p>
         </div>
         <div className='w-12 flex flex-col items-center absolute -right-4 text-[rgba(22,24,35,.5)]'>
