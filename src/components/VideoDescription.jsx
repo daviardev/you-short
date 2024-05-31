@@ -10,7 +10,7 @@ export default function VideoDescription ({ author, description, albumCover, son
         items-end
         absolute
         right-0
-        bottom-0
+        bottom-6
         w-full
         text-white
         z-10
@@ -36,7 +36,7 @@ export default function VideoDescription ({ author, description, albumCover, son
             songName={songName}
           />
         </div>
-        <div className='pr-[.2rem]'>
+        <div className='pr-[.2rem] -my-2'>
           <AlbumDisk
             albumCover={albumCover}
           />

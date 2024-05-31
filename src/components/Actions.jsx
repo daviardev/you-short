@@ -98,7 +98,7 @@ export default function Actions ({ likes, shares, author, avatar, videoId, onSho
   }
 
   return (
-    <aside className='flex flex-col items-center absolute bottom-[50px] right-1 z-20'>
+    <aside className='flex flex-col items-center absolute bottom-[70px] right-1 z-20'>
       <div className='relative'>
         <Link href={`/user/${author}`} className='block w-full h-full'>
           <Image
