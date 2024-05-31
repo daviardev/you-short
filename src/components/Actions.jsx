@@ -87,6 +87,9 @@ export default function Actions ({ likes, shares, author, avatar, videoId, onSho
 
     const videoRef = doc(db, 'videos', videoId)
 
+    navigator && console.info('Copy')
+    await navigator.clipboard.writeText(`http://localhost:3000/video/${videoId}`)
+
     if (!userHasShare) {
       await updateDoc(videoRef, {
         shares: shareCount + 1,
@@ -144,12 +147,10 @@ export default function Actions ({ likes, shares, author, avatar, videoId, onSho
           <Comment width={30} />
           <span className='text-sm' title='comment'>{commentCount}</span>
         </button>
-        <Link href={`/video/${videoId}`}>
-          <button onClick={handleShare} className='text-white flex flex-col justify-center items-center mb-1 bg-transparent border-none'>
-            <Share width={30} />
-            <span className='text-sm' title='share'>{shareCount}</span>
-          </button>
-        </Link>
+        <button onClick={handleShare} className='text-white flex flex-col justify-center items-center mb-1 bg-transparent border-none'>
+          <Share width={30} />
+          <span className='text-sm' title='share'>{shareCount}</span>
+        </button>
       </div>
     </aside>
   )
