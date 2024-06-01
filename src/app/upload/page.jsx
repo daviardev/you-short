@@ -94,6 +94,7 @@ export default function Upload () {
         timeStamp: Date.now()
       })
       discard()
+      setUploading(false)
     } catch (error) {
       console.error('Error uploading video: ', error)
     } finally {
@@ -108,8 +109,9 @@ export default function Upload () {
       const storageRef = ref(storage, `videos/${file.name}`)
 
       await uploadBytes(storageRef, file)
-      await getDownloadURL(storageRef)
-      return setUploading(false)
+      const url = await getDownloadURL(storageRef)
+      setUploading(false)
+      return url
     } catch (error) {
       console.error('Error uploading video: ', error)
       throw error
