@@ -3,7 +3,7 @@
 import { useState } from 'react'
 
 import { AiOutlineCheckCircle } from 'react-icons/ai'
-import { BiCloudUpload } from 'react-icons/bi'
+import { BiCloudUpload, BiLoaderCircle } from 'react-icons/bi'
 
 import useSession from '@/hooks/useSession'
 
@@ -18,25 +18,37 @@ export default function Upload () {
   const [caption, setCaption] = useState('')
   const [fileDisplay, setFileDisplay] = useState('')
 
+  const [uploading, setUploading] = useState(false)
+
   const [file, setFile] = useState(null)
 
   const { session } = useSession()
 
+  const validateFile = file => {
+    const validTypes = ['video/mp4']
+    if (file && validTypes.includes(file.type)) {
+      return true
+    }
+    console.warn('Only MP4 video files are allowed')
+    return false
+  }
+
   const onChange = e => {
     const files = e.target.files
-
     if (files && files.length > 0) {
       const file = files[0]
-      const fileURL = URL.createObjectURL(file)
-      setFileDisplay(fileURL)
-      setFile(file)
+      if (validateFile(file)) {
+        const fileURL = URL.createObjectURL(file)
+        setFileDisplay(fileURL)
+        setFile(file)
+      }
     }
   }
 
   const handleDrop = e => {
     e.preventDefault()
     const file = e.dataTransfer.files[0]
-    if (file) {
+    if (file && validateFile(file)) {
       const fileURL = URL.createObjectURL(file)
       setFileDisplay(fileURL)
       setFile(file)
@@ -63,6 +75,8 @@ export default function Upload () {
 
     const { name, tag, image, uid } = session.user
 
+    setUploading(true)
+
     try {
       const videoURL = await uploadVideo(file)
 
@@ -82,18 +96,25 @@ export default function Upload () {
       discard()
     } catch (error) {
       console.error('Error uploading video: ', error)
+    } finally {
+      setUploading(false)
     }
   }
 
   const uploadVideo = async (file) => {
+    setUploading(true)
+
     try {
       const storageRef = ref(storage, `videos/${file.name}`)
 
       await uploadBytes(storageRef, file)
-      return await getDownloadURL(storageRef)
+      await getDownloadURL(storageRef)
+      return setUploading(false)
     } catch (error) {
       console.error('Error uploading video: ', error)
       throw error
+    } finally {
+      setUploading(false)
     }
   }
 
@@ -113,24 +134,24 @@ export default function Upload () {
                   onDragEnter={handleDragEnter}
                   onDragLeave={handleDragLeave}
                   className='
-                flex
-                flex-row
-                items-center
-                justify-start
-                mx-auto
-                mt-2
-                mb-4
-                w-full
-                h-[100px]
-                text-center
-                p-2
-                border-2
-                border-dashed
-                border-gray-300
-                rounded-lg
-                hover:bg-gray-100
-                cursor-pointer
-              '
+                  flex
+                  flex-row
+                  items-center
+                  justify-start
+                  mx-auto
+                  mt-2
+                  mb-4
+                  w-full
+                  h-[100px]
+                  text-center
+                  p-2
+                  border-2
+                  border-dashed
+                  border-gray-300
+                  rounded-lg
+                  hover:bg-gray-100
+                  cursor-pointer
+                '
                 >
                   <BiCloudUpload size={30} color='#b3b3b1' />
                   <div className='ml-4'>
@@ -154,6 +175,16 @@ export default function Upload () {
                 )
               : (
                 <div className='mx-auto mt-2 mb-4 w-full p-2 rounded-2xl relative'>
+                  {uploading
+                    ? (
+                      <div className='absolute flex items-center right-0 justify-center z-20 bg-black h-full w-full rounded-xl bg-opacity-50'>
+                        <div className='mx-auto flex items-center justify-center gap-1'>
+                          <BiLoaderCircle className='animate-spin' color='#f12b56' size={30} />
+                          <div className='text-white font-bold'>Uploading...</div>
+                        </div>
+                      </div>
+                      )
+                    : null}
                   <div className='absolute flex items-center justify-between rounded-xl border w-[94%] p-2 border-gray-300'>
                     <div className='flex items-center truncate'>
                       <AiOutlineCheckCircle size={16} className='min-w-[16px]' />
@@ -161,7 +192,7 @@ export default function Upload () {
                         {file ? file.name : ''}
                       </span>
                     </div>
-                    <button onClick={discardVideo} className='text-[11px] ml-6 font-semibold'>
+                    <button onClick={discardVideo} className={`text-[11px] ml-6 font-semibold ${uploading && 'select-none'}`}>
                       Change
                     </button>
                   </div>
@@ -174,7 +205,8 @@ export default function Upload () {
                       <input
                         maxLength={150}
                         type='text'
-                        className='border text-[12px] p-2.5 rounded-md w-full focus:outline-none'
+                        disabled={uploading}
+                        className={`border text-[12px] p-2.5 rounded-md w-full focus:outline-none ${uploading && 'select-none border-none cursor-wait'}`}
                         value={caption}
                         onChange={e => setCaption(e.target.value)}
                       />
@@ -182,25 +214,20 @@ export default function Upload () {
                     <div className='flex gap-3'>
                       <button
                         onClick={discard}
-                        className='px-4 w-full py-2.5 mt-8 border text-[16px] hover:bg-gray-100 rounded-sm'
+                        disabled={uploading}
+                        className={`px-4 w-full py-2.5 mt-8 border text-[16px] hover:bg-gray-100 rounded-sm ${uploading && 'select-none bg-gray-100/20'}`}
                       >
-                        Discard
+                        {uploading ? <BiLoaderCircle className='animate-spin ml-5' color='#000000' size={25} /> : 'Discard'}
                       </button>
                       <button
                         onClick={postVideo}
-                        className='px-4 w-full py-2.5 mt-8 border text-[16px] text-white bg-[#f02c56] rounded-sm'
+                        disabled={uploading}
+                        className={`px-4 w-full py-2.5 mt-8 border text-[16px] text-white bg-[#f02c56] rounded-sm ${uploading && 'bg-pink-500/20 select-none cursor-wait'}`}
                       >
-                        Post
+                        {uploading ? <BiLoaderCircle className='animate-spin ml-5' color='#ffffff' size={25} /> : 'Post'}
                       </button>
                     </div>
                   </div>
-                  <video
-                    autoPlay
-                    loop
-                    muted
-                    className='absolute rounded-xl object-cover z-10 p-[13px] w-full h-full'
-                    src={fileDisplay}
-                  />
                 </div>
                 )}
           </div>
