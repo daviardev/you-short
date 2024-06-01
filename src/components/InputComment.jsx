@@ -58,6 +58,7 @@ export default function CommentInput ({ onAddComment }) {
               onChange={e => setNewComment(e.target.value)}
               maxLength={150}
               placeholder='Add comment...'
+              onKeyDown={e => e.key === 'Enter' && handleAddComment()}
               className='
                 h-full
                 w-full
