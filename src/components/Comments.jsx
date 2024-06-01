@@ -72,8 +72,7 @@ export default function Comments ({ onHide, videoId }) {
   return (
     <>
       <div className='flex z-30'>
-        <div className='absolute flex inset-0 bg-[rgba(0,0,0,.5)] shadow-[rgba(0,0,0,.6)] opacity-100 z-20' />
-        <div className='absolute left-0 top-28 w-full bg-[rgb(255,255,255)] rounded-[12px_12px_0px_0px] max-h-[51vh] z-40'>
+        <div className='absolute left-0 top-28 w-full bg-[rgb(255,255,255)] rounded-[12px_12px_0px_0px] transform transition-transform duration-300 max-h-[51vh] z-40'>
           <button
             onClick={onHide}
             className='w-[18px] h-[18px] absolute text-black flex justify-center z-50 items-center right-3 top-3.5'

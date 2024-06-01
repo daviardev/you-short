@@ -124,12 +124,14 @@ export default function VideoPlayer ({ likes, comments, shares, author, descript
           onShowComments={showComments}
         />
 
-        {showModalComment && (
+        {showModalComment && <div className='absolute flex inset-0 bg-[rgba(0,0,0,.5)] shadow-[rgba(0,0,0,.6)] z-20' />}
+
+        <div className={`absolute inset-0 z-20 transition-transform duration-300 ${showModalComment ? 'translate-y-0' : 'translate-y-full'}`}>
           <Comments
             onHide={hideComments}
             videoId={videoId}
           />
-        )}
+        </div>
 
         <VideoDescription
           albumCover={albumCover}
