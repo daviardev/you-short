@@ -3,7 +3,7 @@ import Link from 'next/link'
 import { useState, useEffect } from 'react'
 
 import { db } from '@/firebase'
-import { doc, updateDoc, arrayUnion, arrayRemove } from 'firebase/firestore'
+import { doc, updateDoc, arrayUnion, arrayRemove, getDoc, onSnapshot } from 'firebase/firestore'
 
 import useSession from '@/hooks/useSession'
 import useTimeAgo from '@/hooks/useTimeAgo'
@@ -32,26 +32,46 @@ export default function CommentCard ({ author, avatar, comment, likesComment, li
     }
   }, [likedBy, id])
 
+  useEffect(() => {
+    const commentRef = doc(db, 'videos', videoId, 'comments', commentId)
+    const unsubscribe = onSnapshot(commentRef, (doc) => {
+      if (doc.exists()) {
+        const data = doc.data()
+        setLikeCount(data.likes || 0)
+        setUserHasLiked(data.likedBy.includes(id))
+      }
+    })
+    return () => unsubscribe()
+  }, [videoId, commentId, id])
+
+  const updateProfileLikes = async (authorId, increment) => {
+    const userRef = doc(db, 'users', authorId)
+    const userDoc = await getDoc(userRef)
+    if (userDoc.exists()) {
+      const currentLikes = userDoc.data().likes || 0
+      await updateDoc(userRef, {
+        likes: currentLikes + increment
+      })
+    }
+  }
+
   const handleLike = async () => {
     if (!id) return
 
     const commentRef = doc(db, 'videos', videoId, 'comments', commentId)
 
     if (userHasLiked) {
-      const newLikeCount = Math.max(0, likeCount - 1)
       await updateDoc(commentRef, {
-        likes: newLikeCount,
+        likes: likeCount - 1,
         likedBy: arrayRemove(id)
       })
-      setLikeCount(newLikeCount)
-      setUserHasLiked(false)
+      await updateProfileLikes(commenterId, -1)
     } else {
       await updateDoc(commentRef, {
         likes: likeCount + 1,
         likedBy: arrayUnion(id)
       })
-      setLikeCount(likeCount + 1)
-      setUserHasLiked(true)
+      await updateProfileLikes(commenterId, 1)
     }
   }
 
@@ -154,9 +174,7 @@ export default function CommentCard ({ author, avatar, comment, likesComment, li
                 {showMenu && (
                   <div className='absolute bg-white rounded-lg py-1.5 w-[100px] shadow-xl border top-[30px] right-12 z-40'>
                     <button
-                      onClick={() => {
-                        setShowMenu(false)
-                      }}
+                      onClick={() => setShowMenu(false)}
                       className='flex items-center justify-start w-full py-1 px-1.5 hover:text-[rgb(254,44,85)] cursor-pointer'
                     >
                       <FiFlag size={16} />

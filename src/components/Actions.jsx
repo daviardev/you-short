@@ -46,6 +46,20 @@ export default function Actions ({ likes, shares, author, avatar, videoId, onSho
     return () => unsubscribe()
   }, [videoId])
 
+  useEffect(() => {
+    const videoRef = doc(db, 'videos', videoId)
+    const unsubscribe = onSnapshot(videoRef, (doc) => {
+      if (doc.exists()) {
+        const data = doc.data()
+        setLikeCount(data.likes || 0)
+        setUserHasLiked(data.likedBy?.includes(userId) ?? false)
+        setShareCount(data.shares || 0)
+        setUserHasShare(data.sharedBy?.includes(userId) ?? false)
+      }
+    })
+    return () => unsubscribe()
+  }, [videoId, userId])
+
   const updateProfileLikes = async (authorId, increment) => {
     const userRef = doc(db, 'users', authorId)
     const userDoc = await getDoc(userRef)
@@ -69,16 +83,12 @@ export default function Actions ({ likes, shares, author, avatar, videoId, onSho
         likedBy: arrayRemove(userId)
       })
       await updateProfileLikes(authorId, -1)
-      setLikeCount(Math.max(likeCount - 1, 0))
-      setUserHasLiked(false)
     } else {
       await updateDoc(videoRef, {
         likes: likeCount + 1,
         likedBy: arrayUnion(userId)
       })
       await updateProfileLikes(authorId, 1)
-      setLikeCount(likeCount + 1)
-      setUserHasLiked(true)
     }
   }
 
