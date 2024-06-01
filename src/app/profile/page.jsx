@@ -114,32 +114,27 @@ export default function Profile () {
                       </div>
                     </div>
                   </div>
-                  <h4 className='text-base font-medium text-center'>Videos</h4>
-                  {videos.length
-                    ? videos.map((video, index) => (
-                      <div
-                        key={video.id}
-                        className='grid grid-cols-2 gap-1.5 mt-4 w-auto h-auto'
-                      >
-                        <div className='opacity-80 hover:opacity-100'>
-                          <Link href={`/video/${video.id}`}>
-                            <video
-                              src={video.src}
-                              ref={el => { videoRefs.current[index] = el }}
-                              loop
-                              muted
-                              controls={false}
-                              className='w-23 h-auto rounded-md'
-                              onMouseEnter={() => mouseEnter(index)}
-                              onMouseLeave={() => mouseLeave(index)}
-                            />
-                          </Link>
-                        </div>
+
+                  {!videos.length ? <NotVideosUser /> : <h4 className='text-base font-medium text-center'>Videos</h4>}
+
+                  <div className='grid grid-cols-2 gap-1.5 mt-4 w-auto h-auto'>
+                    {videos.map((video, index) => (
+                      <div key={video.id} className='opacity-80 hover:opacity-100'>
+                        <Link href={`/video/${video.id}`}>
+                          <video
+                            src={video.src}
+                            ref={el => { videoRefs.current[index] = el }}
+                            loop
+                            muted
+                            controls={false}
+                            className='w-23 h-auto rounded-md'
+                            onMouseEnter={() => mouseEnter(index)}
+                            onMouseLeave={() => mouseLeave(index)}
+                          />
+                        </Link>
                       </div>
-                    ))
-                    : (
-                      <NotVideosUser />
-                      )}
+                    ))}
+                  </div>
                 </div>
               </div>
             </div>
