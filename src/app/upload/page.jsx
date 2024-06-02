@@ -33,7 +33,7 @@ export default function Upload () {
     if (file && validTypes.includes(file.type)) {
       return true
     }
-    showError('Only MP4 video files are allowed')
+    showError('Only MP4 files')
     return false
   }
 
@@ -147,23 +147,23 @@ export default function Upload () {
                   onDragEnter={handleDragEnter}
                   onDragLeave={handleDragLeave}
                   className='
-                  flex
-                  flex-row
-                  items-center
-                  justify-start
-                  mx-auto
-                  mt-2
-                  mb-4
-                  w-full
-                  h-[100px]
-                  text-center
-                  p-2
-                  border-2
-                  border-dashed
-                  border-gray-300
-                  rounded-lg
-                  hover:bg-gray-100
-                  cursor-pointer
+                    flex
+                    flex-row
+                    items-center
+                    justify-start
+                    mx-auto
+                    mt-2
+                    mb-4
+                    w-full
+                    h-[100px]
+                    text-center
+                    p-2
+                    border-2
+                    border-dashed
+                    border-gray-300
+                    rounded-lg
+                    hover:bg-gray-100
+                    cursor-pointer
                 '
                 >
                   <BiCloudUpload size={30} color='#b3b3b1' />
@@ -189,14 +189,6 @@ export default function Upload () {
                 )
               : (
                 <div className='mx-auto mt-2 mb-4 w-full p-2 rounded-2xl relative'>
-                  {uploading && (
-                    <div className='absolute flex items-center right-0 justify-center z-20 bg-black h-full w-full rounded-xl bg-opacity-50'>
-                      <div className='mx-auto flex items-center justify-center gap-1'>
-                        <BiLoaderCircle className='animate-spin' color='#f12b56' size={30} />
-                        <div className='text-white font-bold'>Uploading...</div>
-                      </div>
-                    </div>
-                  )}
                   <div className='absolute flex items-center justify-between rounded-xl border w-[94%] p-2 border-gray-300'>
                     <div className='flex items-center truncate'>
                       <AiOutlineCheckCircle size={16} className='min-w-[16px]' />
