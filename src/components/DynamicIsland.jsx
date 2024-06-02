@@ -1,8 +1,11 @@
 'use client'
 
+import Image from 'next/image'
+
 import { useDynamicIsland } from '@/context/DynamicIslandProvider'
 
-import { FaCheck, FaCircle, FaExclamation } from 'react-icons/fa'
+import { LuLoader2 } from 'react-icons/lu'
+import { FaCheck, FaExclamation } from 'react-icons/fa'
 
 export default function DynamicIsland () {
   const { state, information } = useDynamicIsland()
@@ -18,30 +21,34 @@ export default function DynamicIsland () {
       case 'completed':
       case 'error':
         return {
-          width: '270px',
+          width: '250px',
           height: '60px',
           borderRadius: '50px'
         }
       default:
-        return {}
+        return {
+          width: '76px',
+          height: '25px',
+          borderRadius: '20px'
+        }
     }
   }
 
   return (
-    <div className='top-[12px] w-[76px] right-24 h-6 absolute bg-black transition-[all_640ms_cubic-bezier(.77,0,.18,1)] rounded-3xl' style={GetStyle()}>
+    <div className=' absolute top-2.5 left-1/2 transform -translate-x-1/2 z-40 bg-black transition-[all_640ms_cubic-bezier(.77,0,.18,1)] rounded-3xl' style={GetStyle()}>
       {state === 'loading' && (
         <div className='flex justify-between'>
-          <div>
-            <img
-              src='@/app/favicon.ico'
+          <div className='flex absolute left-1'>
+            <Image
+              src='/images/logo.png'
               alt='TikTok Logo'
-              className='rounded-full my-0.5'
-              width={20}
-              height={90}
+              className='rounded-full my-0.5 w-5 h-5'
+              width={100}
+              height={100}
             />
           </div>
-          <div className='flex justify-center items-center'>
-            <FaCircle className='animate-spin' />
+          <div className='flex justify-center right-1 top-1 absolute items-center'>
+            <LuLoader2 className='animate-spin text-white' />
           </div>
         </div>
       )}
@@ -49,16 +56,16 @@ export default function DynamicIsland () {
         <div className='relative'>
           <div className='flex pl-1 items-center'>
             <div className='flex items-center'>
-              <img
-                src='@/app/favicon.ico'
+              <Image
+                src='/images/logo.png'
                 alt='TikTok Logo'
-                className='rounded-full my-2'
-                width={43}
-                height={43}
+                className='rounded-full my-2 w-11 h-11'
+                width={100}
+                height={100}
               />
               <div className='flex flex-col items-start ml-2'>
-                <span className='text-[#6c6c6c] text-xs font-bold'>TikTok</span>
-                <span className='text-white text-xs mt-[3px] -mb-2 overflow-hidden overflow-ellipsis'>{information}</span>
+                <span className='text-[#6c6c6c] text-sm font-bold'>TikTok</span>
+                <span className='text-white text-xs overflow-hidden overflow-ellipsis'>{information}</span>
               </div>
               <div className='absolute top-3 right-4 flex items-center'>
                 <span className='bg-green-300/20 text-green-300 rounded-full h-9 w-9 flex justify-center items-center'>
@@ -73,16 +80,16 @@ export default function DynamicIsland () {
         <div className='relative'>
           <div className='flex pl-1 items-center'>
             <div className='flex items-center'>
-              <img
-                src='@/app/favicon.ico'
+              <Image
+                src='/images/logo.png'
                 alt='TikTok Logo'
-                className='rounded-full my-2'
-                width={43}
-                height={43}
+                className='rounded-full my-2 w-11 h-11'
+                width={100}
+                height={100}
               />
               <div className='flex flex-col items-start ml-2'>
-                <span className='text-[#6c6c6c] text-xs font-bold'>TikTok</span>
-                <span className='text-white text-xs mt-[3px] -mb-2 overflow-hidden overflow-ellipsis'>{information}</span>
+                <span className='text-[#6c6c6c] text-sm font-bold'>TikTok</span>
+                <span className='text-white text-xs overflow-hidden overflow-ellipsis'>{information}</span>
               </div>
               <div className='absolute top-3 right-4 flex items-center'>
                 <span className='bg-red-300/20 text-red-300 rounded-full h-9 w-9 flex justify-center items-center'>
