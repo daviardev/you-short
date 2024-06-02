@@ -59,15 +59,15 @@ export default function Upload () {
   const handleDragEnter = e => e.preventDefault()
   const handleDragLeave = e => e.preventDefault()
 
-  const discard = () => {
-    setFileDisplay('')
-    setFile(null)
-    setCaption('')
+  const discard = async () => {
+    await setCaption('')
+    await setFileDisplay('')
+    await setFile(null)
   }
 
-  const discardVideo = () => {
-    setFileDisplay('')
-    setFile(null)
+  const discardVideo = async () => {
+    await setFileDisplay('')
+    await setFile(null)
   }
 
   const postVideo = async () => {
@@ -93,11 +93,12 @@ export default function Upload () {
         src: videoURL,
         timeStamp: Date.now()
       })
-      discard()
       setUploading(false)
+      discard()
     } catch (error) {
       console.error('Error uploading video: ', error)
     } finally {
+      discard()
       setUploading(false)
     }
   }
@@ -111,12 +112,14 @@ export default function Upload () {
       await uploadBytes(storageRef, file)
       const url = await getDownloadURL(storageRef)
       setUploading(false)
+      discard()
       return url
     } catch (error) {
       console.error('Error uploading video: ', error)
       throw error
     } finally {
       setUploading(false)
+      discard()
     }
   }
 
@@ -172,21 +175,20 @@ export default function Upload () {
                     hidden
                     accept='video/*'
                     onChange={onChange}
+                    disabled={uploading}
                   />
                 </label>
                 )
               : (
                 <div className='mx-auto mt-2 mb-4 w-full p-2 rounded-2xl relative'>
-                  {uploading
-                    ? (
-                      <div className='absolute flex items-center right-0 justify-center z-20 bg-black h-full w-full rounded-xl bg-opacity-50'>
-                        <div className='mx-auto flex items-center justify-center gap-1'>
-                          <BiLoaderCircle className='animate-spin' color='#f12b56' size={30} />
-                          <div className='text-white font-bold'>Uploading...</div>
-                        </div>
+                  {uploading && (
+                    <div className='absolute flex items-center right-0 justify-center z-20 bg-black h-full w-full rounded-xl bg-opacity-50'>
+                      <div className='mx-auto flex items-center justify-center gap-1'>
+                        <BiLoaderCircle className='animate-spin' color='#f12b56' size={30} />
+                        <div className='text-white font-bold'>Uploading...</div>
                       </div>
-                      )
-                    : null}
+                    </div>
+                  )}
                   <div className='absolute flex items-center justify-between rounded-xl border w-[94%] p-2 border-gray-300'>
                     <div className='flex items-center truncate'>
                       <AiOutlineCheckCircle size={16} className='min-w-[16px]' />
@@ -194,7 +196,7 @@ export default function Upload () {
                         {file ? file.name : ''}
                       </span>
                     </div>
-                    <button onClick={discardVideo} className={`text-[11px] ml-6 font-semibold ${uploading && 'select-none'}`}>
+                    <button onClick={discardVideo} disabled={uploading} className={`text-[11px] ml-6 font-semibold ${uploading && 'select-none'}`}>
                       Change
                     </button>
                   </div>
