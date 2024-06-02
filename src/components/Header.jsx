@@ -1,6 +1,8 @@
 import Link from 'next/link'
 import Image from 'next/image'
 
+import DynamicIsland from './DynamicIsland'
+
 export default function Header () {
   return (
     <>
@@ -15,6 +17,7 @@ export default function Header () {
             priority
           />
         </Link>
+        <DynamicIsland />
       </header>
     </>
   )
