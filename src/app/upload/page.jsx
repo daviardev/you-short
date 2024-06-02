@@ -14,6 +14,8 @@ import { db, storage } from '@/firebase'
 import { collection, addDoc } from 'firebase/firestore'
 import { ref, uploadBytes, getDownloadURL } from 'firebase/storage'
 
+import { useDynamicIsland } from '@/context/DynamicIslandProvider'
+
 export default function Upload () {
   const [caption, setCaption] = useState('')
   const [fileDisplay, setFileDisplay] = useState('')
@@ -24,12 +26,14 @@ export default function Upload () {
 
   const { session } = useSession()
 
+  const { showLoading, showCompleted, showError } = useDynamicIsland()
+
   const validateFile = file => {
     const validTypes = ['video/mp4']
     if (file && validTypes.includes(file.type)) {
       return true
     }
-    console.warn('Only MP4 video files are allowed')
+    showError('Only MP4 video files are allowed')
     return false
   }
 
@@ -75,6 +79,7 @@ export default function Upload () {
 
     const { name, tag, image, uid } = session.user
 
+    showLoading()
     setUploading(true)
 
     try {
@@ -93,10 +98,11 @@ export default function Upload () {
         src: videoURL,
         timeStamp: Date.now()
       })
+      showCompleted('Video uploaded')
       setUploading(false)
       discard()
     } catch (error) {
-      console.error('Error uploading video: ', error)
+      showError('Error uploading video', error)
     } finally {
       discard()
       setUploading(false)
@@ -105,6 +111,7 @@ export default function Upload () {
 
   const uploadVideo = async (file) => {
     setUploading(true)
+    showLoading()
 
     try {
       const storageRef = ref(storage, `videos/${file.name}`)
@@ -113,9 +120,10 @@ export default function Upload () {
       const url = await getDownloadURL(storageRef)
       setUploading(false)
       discard()
+      showCompleted('Video uploaded')
       return url
     } catch (error) {
-      console.error('Error uploading video: ', error)
+      showError('Error uploading video', error)
       throw error
     } finally {
       setUploading(false)

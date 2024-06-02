@@ -9,6 +9,8 @@ import { doc, updateDoc, arrayUnion, arrayRemove, getDoc, collection, onSnapshot
 
 import useSession from '@/hooks/useSession'
 
+import { useDynamicIsland } from '@/context/DynamicIslandProvider'
+
 import { Heart, Comment, Share } from './SvgConverted'
 
 export default function Actions ({ likes, shares, author, avatar, videoId, onShowComments }) {
@@ -20,6 +22,8 @@ export default function Actions ({ likes, shares, author, avatar, videoId, onSho
   const [shareCount, setShareCount] = useState(shares)
   const [userHasShare, setUserHasShare] = useState(false)
   const [commentCount, setCommentCount] = useState(0)
+
+  const { showCompleted } = useDynamicIsland()
 
   useEffect(() => {
     const checkIfUserInteracted = async () => {
@@ -96,9 +100,9 @@ export default function Actions ({ likes, shares, author, avatar, videoId, onSho
     if (!userId) return
 
     const videoRef = doc(db, 'videos', videoId)
-
-    navigator && console.info('Copy')
     await navigator.clipboard.writeText(`http://localhost:3000/video/${videoId}`)
+
+    showCompleted('Copied')
 
     if (!userHasShare) {
       await updateDoc(videoRef, {
