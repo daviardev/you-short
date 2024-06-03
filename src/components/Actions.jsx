@@ -100,7 +100,7 @@ export default function Actions ({ likes, shares, author, avatar, videoId, onSho
     if (!userId) return
 
     const videoRef = doc(db, 'videos', videoId)
-    await navigator.clipboard.writeText(`http://localhost:3000/video/${videoId}`)
+    await navigator.clipboard.writeText(`https://tiktok--clone.vercel.app/video/${videoId}`)
 
     showCompleted('Copied')
 
