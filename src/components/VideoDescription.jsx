@@ -1,8 +1,18 @@
+import { useState } from 'react'
 import Link from 'next/link'
+
 import AlbumDisk from './AlbumDisk'
 import SongTicker from './SongTicker'
 
 export default function VideoDescription ({ author, description, albumCover, songName }) {
+  const [showFullDescription, setShowFullDescription] = useState(false)
+
+  const toggleDescription = () => {
+    setShowFullDescription(!showFullDescription)
+  }
+
+  const truncatedDescription = description.slice(0, 50)
+
   return (
     <>
       <div className='
@@ -30,7 +40,16 @@ export default function VideoDescription ({ author, description, albumCover, son
             </Link>
           </strong>
           <p>
-            {description}
+            {showFullDescription ? description : `${truncatedDescription}...`}
+            {description.length > 50 &&
+              (
+                <button
+                  onClick={toggleDescription}
+                  className='ml-1 font-bold underline'
+                >
+                  {showFullDescription ? 'less' : 'more'}
+                </button>
+              )}
           </p>
           <SongTicker
             songName={songName}
