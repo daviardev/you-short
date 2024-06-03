@@ -103,6 +103,7 @@ export default function Upload () {
       discard()
     } catch (error) {
       showError('Error uploading video', error)
+      console.error(error)
     } finally {
       discard()
       setUploading(false)
