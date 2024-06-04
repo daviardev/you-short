@@ -47,7 +47,8 @@ export default function Comments ({ onHide, videoId }) {
       commenterAvatar: image,
       timeStamp: Date.now(),
       likes: 0,
-      likedBy: []
+      likedBy: [],
+      replies: []
     }
 
     try {
@@ -102,6 +103,7 @@ export default function Comments ({ onHide, videoId }) {
                       commenterId={comment.commenterId}
                       onDeleteComment={handleDeleteComment}
                       timeStamp={comment.timeStamp}
+                      replies={comment.replies}
                     />
                   ))
                   : (

@@ -13,7 +13,9 @@ import { FiFlag } from 'react-icons/fi'
 import { FaRegTrashAlt } from 'react-icons/fa'
 import { HiOutlineHeart, HiMiniHeart } from 'react-icons/hi2'
 
-export default function CommentCard ({ author, avatar, comment, likesComment, likedBy, commentId, videoId, commenterId, onDeleteComment, timeStamp }) {
+import InputComment from './InputComment'
+
+export default function CommentCard ({ author, avatar, comment, likesComment, likedBy, commentId, videoId, commenterId, onDeleteComment, timeStamp, replies = [] }) {
   const { session } = useSession()
   const id = session?.user?.uid
 
@@ -22,8 +24,10 @@ export default function CommentCard ({ author, avatar, comment, likesComment, li
 
   const [likeCount, setLikeCount] = useState(likesComment)
 
+  const [showMenu, setShowMenu] = useState(false)
+  const [showReplies, setShowReplies] = useState(false)
   const [userHasLiked, setUserHasLiked] = useState(false)
-  let [showMenu, setShowMenu] = useState(false)
+  const [showReplyInput, setShowReplyInput] = useState(false)
 
   useEffect(() => {
     if (likedBy && id) {
@@ -33,6 +37,10 @@ export default function CommentCard ({ author, avatar, comment, likesComment, li
   }, [likedBy, id])
 
   useEffect(() => {
+    if (!videoId || !commentId) {
+      return console.clear()
+    }
+
     const commentRef = doc(db, 'videos', videoId, 'comments', commentId)
     const unsubscribe = onSnapshot(commentRef, (doc) => {
       if (doc.exists()) {
@@ -57,6 +65,9 @@ export default function CommentCard ({ author, avatar, comment, likesComment, li
 
   const handleLike = async () => {
     if (!id) return
+    if (!videoId || !commentId) {
+      return console.clear()
+    }
 
     const commentRef = doc(db, 'videos', videoId, 'comments', commentId)
 
@@ -75,22 +86,59 @@ export default function CommentCard ({ author, avatar, comment, likesComment, li
     }
   }
 
+  const handleAddReply = async (replyText) => {
+    if (!videoId || !commentId) {
+      return console.clear()
+    }
+
+    const { tag, image, uid } = session.user
+    const commentRef = doc(db, 'videos', videoId, 'comments', commentId)
+    const replyData = {
+      text: replyText,
+      commenterId: uid,
+      commenterUser: tag,
+      commenterAvatar: image,
+      timeStamp: Date.now(),
+      likes: 0,
+      likedBy: [],
+      replyId: `${commentId}-${Date.now()}`
+    }
+
+    try {
+      const docSnap = await getDoc(commentRef)
+      if (docSnap.exists()) {
+        const existingReplies = docSnap.data().replies || []
+        await updateDoc(commentRef, {
+          replies: [...existingReplies, replyData]
+        })
+      }
+    } catch (error) {
+      console.error('Error adding reply:', error.message)
+    }
+  }
+
   return (
     <div className='mb-4'>
       <div className='flex flex-row items-start mb-2.5 relative overscroll-contain text-center'>
-        <Link className='flex-[0_0_32px] mr-3' href={`/user/@${author}`}>
+        <Link
+          href={`/user/@${author}`}
+          className='flex-[0_0_32px] mr-3'
+        >
           <span className='block w-full h-full m-0 p-0 relative align-middle leading-8'>
             <Image
+              src={avatar}
+              alt={author}
               width={100}
               height={100}
-              alt={author}
               className='w-8 h-8 object-cover border border-white border-solid rounded-full'
-              src={avatar}
             />
           </span>
         </Link>
         <div className='flex-1 flex flex-col items-start pe-10'>
-          <Link href={`/user/@${author}`} className='font-bold text-xs leading-[17px]'>
+          <Link
+            href={`/user/@${author}`}
+            className='font-bold text-xs leading-[17px]'
+          >
             {author}
           </Link>
           <p
@@ -117,9 +165,16 @@ export default function CommentCard ({ author, avatar, comment, likesComment, li
               <span className='w-5 h-5'>
                 {!userHasLiked
                   ? (
-                    <HiOutlineHeart size={22} />
+                    <HiOutlineHeart
+                      size={22}
+                    />
                     )
-                  : <HiMiniHeart size={22} fill='rgb(254, 44, 85)' />}
+                  : (
+                    <HiMiniHeart
+                      size={22}
+                      fill='rgb(254, 44, 85)'
+                    />
+                    )}
               </span>
             </button>
             <span className='text-xs'>{likeCount}</span>
@@ -127,9 +182,7 @@ export default function CommentCard ({ author, avatar, comment, likesComment, li
           {id === commenterId
             ? (
               <>
-                <button
-                  onClick={() => setShowMenu(showMenu = !showMenu)}
-                >
+                <button onClick={() => setShowMenu(!showMenu)}>
                   <svg
                     width='1em'
                     height='1em'
@@ -137,7 +190,11 @@ export default function CommentCard ({ author, avatar, comment, likesComment, li
                     fill='currentColor'
                     xmlns='http://www.w3.org/2000/svg'
                   >
-                    <path fillRule='evenodd' clipRule='evenodd' d='M4 24C4 21.7909 5.79086 20 8 20C10.2091 20 12 21.7909 12 24C12 26.2091 10.2091 28 8 28C5.79086 28 4 26.2091 4 24ZM20 24C20 21.7909 21.7909 20 24 20C26.2091 20 28 21.7909 28 24C28 26.2091 26.2091 28 24 28C21.7909 28 20 26.2091 20 24ZM36 24C36 21.7909 37.7909 20 40 20C42.2091 20 44 21.7909 44 24C44 26.2091 42.2091 28 40 28C37.7909 28 36 26.2091 36 24Z' />
+                    <path
+                      fillRule='evenodd'
+                      clipRule='evenodd'
+                      d='M4 24C4 21.7909 5.79086 20 8 20C10.2091 20 12 21.7909 12 24C12 26.2091 10.2091 28 8 28C5.79086 28 4 26.2091 4 24ZM20 24C20 21.7909 21.7909 20 24 20C26.2091 20 28 21.7909 28 24C28 26.2091 26.2091 28 24 28C21.7909 28 20 26.2091 20 24ZM36 24C36 21.7909 37.7909 20 40 20C42.2091 20 44 21.7909 44 24C44 26.2091 42.2091 28 40 28C37.7909 28 36 26.2091 36 24Z'
+                    />
                   </svg>
                 </button>
                 {showMenu && (
@@ -149,7 +206,9 @@ export default function CommentCard ({ author, avatar, comment, likesComment, li
                       }}
                       className='flex items-center justify-start w-full py-1 px-1.5 hover:text-[rgb(254,44,85)] cursor-pointer'
                     >
-                      <FaRegTrashAlt size={16} />
+                      <FaRegTrashAlt
+                        size={16}
+                      />
                       <span className='pl-2 font-semibold text-sm'>Delete</span>
                     </button>
                   </div>
@@ -159,7 +218,7 @@ export default function CommentCard ({ author, avatar, comment, likesComment, li
             : (
               <>
                 <button
-                  onClick={() => setShowMenu(showMenu = !showMenu)}
+                  onClick={() => setShowMenu(!showMenu)}
                 >
                   <svg
                     width='1em'
@@ -168,7 +227,11 @@ export default function CommentCard ({ author, avatar, comment, likesComment, li
                     fill='currentColor'
                     xmlns='http://www.w3.org/2000/svg'
                   >
-                    <path fillRule='evenodd' clipRule='evenodd' d='M4 24C4 21.7909 5.79086 20 8 20C10.2091 20 12 21.7909 12 24C12 26.2091 10.2091 28 8 28C5.79086 28 4 26.2091 4 24ZM20 24C20 21.7909 21.7909 20 24 20C26.2091 20 28 21.7909 28 24C28 26.2091 26.2091 28 24 28C21.7909 28 20 26.2091 20 24ZM36 24C36 21.7909 37.7909 20 40 20C42.2091 20 44 21.7909 44 24C44 26.2091 42.2091 28 40 28C37.7909 28 36 26.2091 36 24Z' />
+                    <path
+                      fillRule='evenodd'
+                      clipRule='evenodd'
+                      d='M4 24C4 21.7909 5.79086 20 8 20C10.2091 20 12 21.7909 12 24C12 26.2091 10.2091 28 8 28C5.79086 28 4 26.2091 4 24ZM20 24C20 21.7909 21.7909 20 24 20C26.2091 20 28 21.7909 28 24C28 26.2091 26.2091 28 24 28C21.7909 28 20 26.2091 20 24ZM36 24C36 21.7909 37.7909 20 40 20C42.2091 20 44 21.7909 44 24C44 26.2091 42.2091 28 40 28C37.7909 28 36 26.2091 36 24Z'
+                    />
                   </svg>
                 </button>
                 {showMenu && (
@@ -177,7 +240,9 @@ export default function CommentCard ({ author, avatar, comment, likesComment, li
                       onClick={() => setShowMenu(false)}
                       className='flex items-center justify-start w-full py-1 px-1.5 hover:text-[rgb(254,44,85)] cursor-pointer'
                     >
-                      <FiFlag size={16} />
+                      <FiFlag
+                        size={16}
+                      />
                       <span className='pl-2 font-semibold text-sm'>Report</span>
                     </button>
                   </div>
@@ -185,6 +250,55 @@ export default function CommentCard ({ author, avatar, comment, likesComment, li
               </>
               )}
         </div>
+      </div>
+      <div className='grid grid-flow-col relative -top-0.5 justify-evenly'>
+        <button
+          onClick={() => setShowReplyInput(!showReplyInput)}
+          className='text-[10px] text-[rgba(22,24,35,0.5)] cursor-pointer'
+        >
+          Reply
+        </button>
+
+        {
+          showReplyInput &&
+            <InputComment
+              onAddComment={handleAddReply}
+            />
+        }
+
+        {replies.length > 0 && (
+          <div>
+            <button
+              onClick={() => setShowReplies(!showReplies)}
+              className='text-[10px] text-[rgba(22,24,35,0.5)]'
+            >
+              {
+                showReplies
+                  ? 'Hide replies'
+                  : `Show replies (${replies.length})`
+              }
+            </button>
+            {showReplies && (
+              <div className='mt-2'>
+                {replies.map((reply, index) => (
+                  <CommentCard
+                    key={index}
+                    author={reply.commenterUser}
+                    avatar={reply.commenterAvatar}
+                    comment={reply.text}
+                    likesComment={reply.likes}
+                    likedBy={reply.likedBy}
+                    commentId={reply.replyId}
+                    videoId={videoId}
+                    commenterId={reply.commenterId}
+                    timeStamp={reply.timeStamp}
+                    parentCommentId={commentId}
+                  />
+                ))}
+              </div>
+            )}
+          </div>
+        )}
       </div>
     </div>
   )
