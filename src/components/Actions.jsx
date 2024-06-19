@@ -22,6 +22,7 @@ export default function Actions ({ likes, shares, author, avatar, videoId, onSho
   const [shareCount, setShareCount] = useState(shares)
   const [userHasShare, setUserHasShare] = useState(false)
   const [commentCount, setCommentCount] = useState(0)
+  const [authorUid, setAuthorUid] = useState('')
 
   const { showCompleted } = useDynamicIsland()
 
@@ -31,6 +32,7 @@ export default function Actions ({ likes, shares, author, avatar, videoId, onSho
         const videoDoc = await getDoc(doc(db, 'videos', videoId))
         if (videoDoc.exists()) {
           const videoData = videoDoc.data()
+          setAuthorUid(videoData.userId)
           setUserHasLiked(videoData.likedBy?.includes(userId) ?? false)
           setUserHasShare(videoData.sharedBy?.includes(userId) ?? false)
         }
@@ -117,7 +119,7 @@ export default function Actions ({ likes, shares, author, avatar, videoId, onSho
   return (
     <aside className='flex flex-col items-center absolute bottom-[70px] right-1 z-20'>
       <div className='relative'>
-        <Link href={`/user/${author}`} className='block w-full h-full'>
+        <Link href={`/user/${authorUid}`} className='block w-full h-full'>
           <Image
             src={avatar}
             alt={author}
