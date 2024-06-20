@@ -10,10 +10,12 @@ import useTimeAgo from '@/hooks/useTimeAgo'
 import useDateTimeFormat from '@/hooks/useDateTimeFormat'
 
 import { FiFlag } from 'react-icons/fi'
+import { IoClose } from 'react-icons/io5'
 import { FaRegTrashAlt } from 'react-icons/fa'
 import { HiOutlineHeart, HiMiniHeart } from 'react-icons/hi2'
 
 import InputComment from './InputComment'
+import ReplyComment from './ReplyComment'
 
 export default function CommentCard ({ author, avatar, comment, likesComment, likedBy, commentId, videoId, commenterId, onDeleteComment, timeStamp, replies = [] }) {
   const { session } = useSession()
@@ -29,6 +31,8 @@ export default function CommentCard ({ author, avatar, comment, likesComment, li
   const [userHasLiked, setUserHasLiked] = useState(false)
   const [showReplyInput, setShowReplyInput] = useState(false)
 
+  const [authorUid, setAuthorUid] = useState('')
+
   useEffect(() => {
     if (likedBy && id) {
       const likedByCurrentUser = likedBy.includes(id)
@@ -37,10 +41,6 @@ export default function CommentCard ({ author, avatar, comment, likesComment, li
   }, [likedBy, id])
 
   useEffect(() => {
-    if (!videoId || !commentId) {
-      return console.clear()
-    }
-
     const commentRef = doc(db, 'videos', videoId, 'comments', commentId)
     const unsubscribe = onSnapshot(commentRef, (doc) => {
       if (doc.exists()) {
@@ -108,6 +108,7 @@ export default function CommentCard ({ author, avatar, comment, likesComment, li
       const docSnap = await getDoc(commentRef)
       if (docSnap.exists()) {
         const existingReplies = docSnap.data().replies || []
+        setAuthorUid(docSnap.userId)
         await updateDoc(commentRef, {
           replies: [...existingReplies, replyData]
         })
@@ -117,11 +118,21 @@ export default function CommentCard ({ author, avatar, comment, likesComment, li
     }
   }
 
+  const toggleReplyInput = () => {
+    setShowReplyInput(prevState => !prevState)
+    !showReplyInput && setShowReplies(false)
+  }
+
+  const toggleShowReplies = () => {
+    setShowReplies(prevState => !prevState)
+    !showReplies && setShowReplyInput(false)
+  }
+
   return (
     <div className='mb-4'>
       <div className='flex flex-row items-start mb-2.5 relative overscroll-contain text-center'>
         <Link
-          href={`/user/@${author}`}
+          href={`/user/${authorUid}`}
           className='flex-[0_0_32px] mr-3'
         >
           <span className='block w-full h-full m-0 p-0 relative align-middle leading-8'>
@@ -136,7 +147,7 @@ export default function CommentCard ({ author, avatar, comment, likesComment, li
         </Link>
         <div className='flex-1 flex flex-col items-start pe-10'>
           <Link
-            href={`/user/@${author}`}
+            href={`/user/${authorUid}`}
             className='font-bold text-xs leading-[17px]'
           >
             {author}
@@ -252,52 +263,63 @@ export default function CommentCard ({ author, avatar, comment, likesComment, li
         </div>
       </div>
       <div className='grid grid-flow-col relative -top-0.5 justify-evenly'>
-        <button
-          onClick={() => setShowReplyInput(!showReplyInput)}
-          className='text-[10px] text-[rgba(22,24,35,0.5)] cursor-pointer'
-        >
-          Reply
-        </button>
-
-        {
-          showReplyInput &&
-            <InputComment
-              onAddComment={handleAddReply}
-            />
-        }
-
-        {replies.length > 0 && (
-          <div>
+        {!showReplyInput && (
+          <>
             <button
-              onClick={() => setShowReplies(!showReplies)}
-              className='text-[10px] text-[rgba(22,24,35,0.5)]'
+              onClick={toggleReplyInput}
+              className='text-[10px] text-[rgba(22,24,35,0.5)] cursor-pointer'
             >
-              {
-                showReplies
-                  ? 'Hide replies'
-                  : `Show replies (${replies.length})`
-              }
+              Reply
             </button>
-            {showReplies && (
-              <div className='mt-2'>
-                {replies.map((reply, index) => (
-                  <CommentCard
-                    key={index}
-                    author={reply.commenterUser}
-                    avatar={reply.commenterAvatar}
-                    comment={reply.text}
-                    likesComment={reply.likes}
-                    likedBy={reply.likedBy}
-                    commentId={reply.replyId}
-                    videoId={videoId}
-                    commenterId={reply.commenterId}
-                    timeStamp={reply.timeStamp}
-                    parentCommentId={commentId}
-                  />
-                ))}
-              </div>
+            {replies.length > 0 && (
+              <button
+                onClick={toggleShowReplies}
+                className='text-[10px] text-[rgba(22,24,35,0.5)]'
+              >
+                {showReplies ? 'Hide replies' : `Show replies (${replies.length})`}
+              </button>
             )}
-          </div>
+          </>
+        )}
+        {showReplyInput && (
+          <>
+            <div className='mt-2'>
+              <InputComment
+                onAddComment={handleAddReply}
+              />
+            </div>
+            <button
+              onClick={toggleReplyInput}
+              className='text-[10px] text-[rgba(22,24,35,0.5)] cursor-pointer'
+            >
+              {showReplyInput &&
+                <IoClose
+                  size={16}
+                  className='text-black mt-1 ml-1'
+                />}
+            </button>
+          </>
+        )}
+        {showReplies && (
+          <>
+            <div className='mt-2'>
+              {replies.map((reply, index) => (
+                <ReplyComment
+                  key={index}
+                  author={reply.commenterUser}
+                  avatar={reply.commenterAvatar}
+                  comment={reply.text}
+                  likedBy={reply.likedBy}
+                  videoId={videoId}
+                  replies={reply.replies}
+                  commentId={reply.replyId}
+                  timeStamp={reply.timeStamp}
+                  commenterId={reply.commenterId}
+                  likesComment={reply.likes}
+                />
+              ))}
+            </div>
+          </>
         )}
       </div>
     </div>
