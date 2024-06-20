@@ -2,7 +2,11 @@ import { useState } from 'react'
 
 import { BiLoaderCircle } from 'react-icons/bi'
 
+import { useDynamicIsland } from '@/context/DynamicIslandProvider'
+
 export default function CommentInput ({ onAddComment }) {
+  const { showError } = useDynamicIsland()
+
   const [newComment, setNewComment] = useState('')
 
   const [uploading, setUploading] = useState(false)
@@ -15,7 +19,7 @@ export default function CommentInput ({ onAddComment }) {
       setNewComment('')
       setUploading(false)
     } catch (err) {
-      console.error(err)
+      showError(err)
     }
   }
 

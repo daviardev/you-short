@@ -6,6 +6,7 @@ import { db } from '@/firebase'
 import { doc, collection, addDoc, deleteDoc, onSnapshot, query, orderBy } from 'firebase/firestore'
 
 import useSession from '@/hooks/useSession'
+import { useDynamicIsland } from '@/context/DynamicIslandProvider'
 
 import { IoClose } from 'react-icons/io5'
 
@@ -13,6 +14,7 @@ import CommentCard from './CommentCard'
 import InputComment from './InputComment'
 
 export default function Comments ({ onHide, videoId }) {
+  const { showError } = useDynamicIsland()
   const { session } = useSession()
 
   const [comments, setComments] = useState([])
@@ -54,7 +56,7 @@ export default function Comments ({ onHide, videoId }) {
     try {
       await addDoc(commentsRef, commentData)
     } catch (error) {
-      console.error('Error adding comment:', error.message)
+      showError('Error adding comment:', error.message)
     }
   }
 
@@ -66,7 +68,7 @@ export default function Comments ({ onHide, videoId }) {
       setComments(comments.filter(comment => comment.id !== commentId))
       setCommentCount(commentCount - 1)
     } catch (error) {
-      console.error('Error deleting comment:', error.message)
+      showError('Error deleting comment:', error.message)
     }
   }
 

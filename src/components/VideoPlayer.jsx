@@ -9,7 +9,11 @@ import VideoDescription from './VideoDescription'
 
 import { FaPlay, FaPause } from 'react-icons/fa'
 
+import { useDynamicIsland } from '@/context/DynamicIslandProvider'
+
 export default function VideoPlayer ({ likes, comments, shares, author, description, albumCover, songName, src, avatar, videoId }) {
+  const { showError } = useDynamicIsland()
+
   const [showModalComment, setShowModalComment] = useState(false)
   const [progress, setProgress] = useState(0)
   const [isPaused, setIsPaused] = useState(false)
@@ -25,7 +29,7 @@ export default function VideoPlayer ({ likes, comments, shares, author, descript
 
     if (videoElement && inView) {
       videoElement.play().catch(error => {
-        console.error('Error playing video:', error.message)
+        showError('Error playing video', error.message)
       })
     } else if (videoElement) {
       videoElement.pause()
@@ -44,13 +48,13 @@ export default function VideoPlayer ({ likes, comments, shares, author, descript
     const { current: videoElement } = video
 
     if (!videoElement || !(videoElement instanceof window.HTMLVideoElement)) {
-      console.error('This element video is invalid.')
+      showError('This element video is invalid.')
       return
     }
 
     if (videoElement.paused) {
       videoElement.play().catch(error => {
-        console.error('Error playing video:', error.message)
+        showError('Error playing video', error.message)
       })
       setIsPaused(false)
     } else {

@@ -4,11 +4,13 @@ import { useState, useEffect } from 'react'
 import { useParams } from 'next/navigation'
 
 import VideoPlayer from '@/components/VideoPlayer'
+import { useDynamicIsland } from '@/context/DynamicIslandProvider'
 
 import { db } from '@/firebase'
 import { doc, getDoc } from 'firebase/firestore'
 
 export default function VideoPage () {
+  const { showError } = useDynamicIsland()
   const [video, setVideo] = useState(null)
 
   const { id } = useParams()
@@ -29,10 +31,10 @@ export default function VideoPage () {
             setVideo(null)
           }
         } catch (error) {
-          console.error('Error fetching video:', error)
+          showError('Error fetching video:', error)
         }
       } else {
-        console.log('No ID provided in URL')
+        showError('No ID provided in URL')
       }
     }
 

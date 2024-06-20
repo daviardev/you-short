@@ -12,11 +12,14 @@ import { Dots } from '@/components/SvgConverted'
 import { GoSignOut } from 'react-icons/go'
 
 import useSession from '@/hooks/useSession'
+import { useDynamicIsland } from '@/context/DynamicIslandProvider'
 
 import { db } from '@/firebase'
 import { collection, query, where, getDocs, doc, getDoc } from 'firebase/firestore'
 
 export default function Profile ({ userId }) {
+  const { showError } = useDynamicIsland()
+
   const [videos, setVideos] = useState([])
 
   const [totalLikes, setTotalLikes] = useState(0)
@@ -38,7 +41,7 @@ export default function Profile ({ userId }) {
         if (userDoc.exists()) {
           setUserProfile(userDoc.data())
         } else {
-          console.error(`No user profile found for user ID: ${uid}`)
+          showError('User not found')
         }
       }
     }

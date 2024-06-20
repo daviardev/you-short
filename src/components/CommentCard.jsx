@@ -8,6 +8,7 @@ import { doc, updateDoc, arrayUnion, arrayRemove, getDoc, onSnapshot } from 'fir
 import useSession from '@/hooks/useSession'
 import useTimeAgo from '@/hooks/useTimeAgo'
 import useDateTimeFormat from '@/hooks/useDateTimeFormat'
+import { useDynamicIsland } from '@/context/DynamicIslandProvider'
 
 import { FiFlag } from 'react-icons/fi'
 import { IoClose } from 'react-icons/io5'
@@ -18,6 +19,8 @@ import InputComment from './InputComment'
 import ReplyComment from './ReplyComment'
 
 export default function CommentCard ({ author, avatar, comment, likesComment, likedBy, commentId, videoId, commenterId, onDeleteComment, timeStamp, replies = [] }) {
+  const { showError } = useDynamicIsland()
+
   const { session } = useSession()
   const id = session?.user?.uid
 
@@ -65,9 +68,6 @@ export default function CommentCard ({ author, avatar, comment, likesComment, li
 
   const handleLike = async () => {
     if (!id) return
-    if (!videoId || !commentId) {
-      return console.clear()
-    }
 
     const commentRef = doc(db, 'videos', videoId, 'comments', commentId)
 
@@ -87,10 +87,6 @@ export default function CommentCard ({ author, avatar, comment, likesComment, li
   }
 
   const handleAddReply = async (replyText) => {
-    if (!videoId || !commentId) {
-      return console.clear()
-    }
-
     const { tag, image, uid } = session.user
     const commentRef = doc(db, 'videos', videoId, 'comments', commentId)
     const replyData = {
@@ -114,7 +110,7 @@ export default function CommentCard ({ author, avatar, comment, likesComment, li
         })
       }
     } catch (error) {
-      console.error('Error adding reply:', error.message)
+      showError('Error adding reply:', error.message)
     }
   }
 
