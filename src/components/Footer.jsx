@@ -1,3 +1,5 @@
+'use client'
+
 import Link from 'next/link'
 
 import { RiHome5Fill } from 'react-icons/ri'
@@ -7,7 +9,10 @@ import { FaRegUser } from 'react-icons/fa'
 
 import { Upload } from './SvgConverted'
 
+import useSession from '@/hooks/useSession'
+
 export default function Footer () {
+  const { session } = useSession()
   return (
     <>
       <footer className='w-full justify-evenly text-sm text-black p-2 gap-5 bottom-0 border-t-[1px] border-[rgba(22,24,35,.2)]'>
@@ -42,7 +47,7 @@ export default function Footer () {
             <span>Inbox</span>
           </Link>
           <Link
-            href='/profile'
+            href={`/user/${session?.user?.uid}`}
             className='flex flex-col items-center'
           >
             <FaRegUser size={22} />
