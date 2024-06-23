@@ -40,7 +40,7 @@ export default function VideoDescription ({ author, description, albumCover, son
             </Link>
           </strong>
           <p>
-            {showFullDescription ? description : `${truncatedDescription}...`}
+            {showFullDescription ? description : truncatedDescription}
             {description.length > 50 &&
               (
                 <button

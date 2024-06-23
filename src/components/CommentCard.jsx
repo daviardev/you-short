@@ -34,8 +34,6 @@ export default function CommentCard ({ author, avatar, comment, likesComment, li
   const [userHasLiked, setUserHasLiked] = useState(false)
   const [showReplyInput, setShowReplyInput] = useState(false)
 
-  const [authorUid, setAuthorUid] = useState('')
-
   useEffect(() => {
     if (likedBy && id) {
       const likedByCurrentUser = likedBy.includes(id)
@@ -104,7 +102,6 @@ export default function CommentCard ({ author, avatar, comment, likesComment, li
       const docSnap = await getDoc(commentRef)
       if (docSnap.exists()) {
         const existingReplies = docSnap.data().replies || []
-        setAuthorUid(docSnap.userId)
         await updateDoc(commentRef, {
           replies: [...existingReplies, replyData]
         })
@@ -128,7 +125,7 @@ export default function CommentCard ({ author, avatar, comment, likesComment, li
     <div className='mb-4'>
       <div className='flex flex-row items-start mb-2.5 relative overscroll-contain text-center'>
         <Link
-          href={`/user/${authorUid}`}
+          href={`/user/${commenterId}`}
           className='flex-[0_0_32px] mr-3'
         >
           <span className='block w-full h-full m-0 p-0 relative align-middle leading-8'>
@@ -143,7 +140,7 @@ export default function CommentCard ({ author, avatar, comment, likesComment, li
         </Link>
         <div className='flex-1 flex flex-col items-start pe-10'>
           <Link
-            href={`/user/${authorUid}`}
+            href={`/user/${commenterId}`}
             className='font-bold text-xs leading-[17px]'
           >
             {author}
