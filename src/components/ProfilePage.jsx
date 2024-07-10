@@ -4,10 +4,10 @@ import Link from 'next/link'
 import Image from 'next/image'
 import { useState, useEffect, useRef } from 'react'
 
-import Loader from '@/components/Load'
-import NotVideosUser from '@/components/NotVideosUser'
+import Loader from '@/components/Utils/Load'
+import NotVideosUser from '@/components/Utils/NotVideosUser'
 
-import { Dots } from '@/components/SvgConverted'
+import { Dots } from '@/components/Utils/SvgConverted'
 
 import { GoSignOut } from 'react-icons/go'
 
