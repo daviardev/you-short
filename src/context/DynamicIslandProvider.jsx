@@ -10,11 +10,9 @@ export const DynamicIslandProvider = ({ children }) => {
   const [state, setState] = useState('inactive')
   const [information, setInformation] = useState('')
 
-  const showLoading = () => {
-    setState('loading')
-  }
+  const showLoading = () => setState('loading')
 
-  const showCompleted = (info) => {
+  const showCompleted = info => {
     setInformation(info)
     setState('completed')
     setTimeout(() => {
@@ -22,7 +20,7 @@ export const DynamicIslandProvider = ({ children }) => {
     }, 3000)
   }
 
-  const showError = (info) => {
+  const showError = info => {
     setInformation(info)
     setState('error')
     setTimeout(() => {
@@ -31,7 +29,14 @@ export const DynamicIslandProvider = ({ children }) => {
   }
 
   return (
-    <DynamicIslandContext.Provider value={{ state, information, showLoading, showCompleted, showError }}>
+    <DynamicIslandContext.Provider value={{
+      state,
+      information,
+      showError,
+      showLoading,
+      showCompleted
+    }}
+    >
       {children}
     </DynamicIslandContext.Provider>
   )

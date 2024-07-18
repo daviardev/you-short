@@ -7,7 +7,7 @@ import { BiCloudUpload, BiLoaderCircle } from 'react-icons/bi'
 
 import useSession from '@/hooks/useSession'
 
-import Loader from '@/components/Load'
+import Loader from '@/components/Utils/Load'
 
 import { db, storage } from '@/firebase'
 
@@ -87,14 +87,13 @@ export default function Upload () {
 
       await addDoc(collection(db, 'videos'), {
         author: name,
+        avatar: image,
         userId: uid,
+        songName: `original sound - ${tag}`,
         description: caption,
         likes: 0,
-        comments: 0,
         shares: 0,
-        songName: `original sound - ${tag}`,
-        avatar: image,
-        albumCover: image,
+        comments: 0,
         src: videoURL,
         timeStamp: Date.now()
       })
@@ -109,7 +108,7 @@ export default function Upload () {
     }
   }
 
-  const uploadVideo = async (file) => {
+  const uploadVideo = async file => {
     setUploading(true)
     showLoading()
 
@@ -135,9 +134,9 @@ export default function Upload () {
     <>
       {session
         ? (
-          <div className='py-12 px-2.5'>
-            <h1 className='text-[18px] font-semibold'>Load video</h1>
-            <h2 className='text-gray-400 mt-1 text-[14px]'>Post a video on your account</h2>
+          <div className='py-12 px-4 max-w-md mx-auto'>
+            <h1 className='text-lg font-semibold mb-2'>Load Video</h1>
+            <h2 className='text-gray-500 text-sm mb-4'>Post a video on your account</h2>
             {!fileDisplay
               ? (
                 <label
@@ -148,32 +147,30 @@ export default function Upload () {
                   onDragLeave={handleDragLeave}
                   className='
                     flex
-                    flex-row
+                    flex-col
                     items-center
-                    justify-start
-                    mx-auto
-                    mt-2
-                    mb-4
+                    justify-center
                     w-full
-                    h-[100px]
-                    text-center
+                    h-46
                     p-2
                     border-2
                     border-dashed
-                    border-gray-300
-                    rounded-lg
-                    hover:bg-gray-100
+                  border-gray-300
+                    rounded-xl
                     cursor-pointer
-                '
+                  hover:bg-gray-50
+                  dark:hover:bg-gray-50/20
+                  '
                 >
-                  <BiCloudUpload size={30} color='#b3b3b1' />
-                  <div className='ml-4'>
-                    <p className='text-[12px]'>Select the video to load</p>
-                    <p className='text-gray-500 text-[10px]'>Or drag and drop file</p>
-                  </div>
+                  <BiCloudUpload
+                    size={60}
+                    className='mb-2'
+                  />
+                  <p className='text-sm'>Select the video to load</p>
+                  <p className='text-xs text-gray-500'>Or drag and drop file</p>
                   <label
                     htmlFor='fileInput'
-                    className='ml-4 p-1 mt-0 text-white text-[13px] bg-[#f02c56] rounded-sm cursor-pointer leading-3'
+                    className='mt-2 py-1 px-3 bg-red-500 text-white text-sm rounded-full cursor-pointer'
                   >
                     Select a file
                   </label>
@@ -188,53 +185,75 @@ export default function Upload () {
                 </label>
                 )
               : (
-                <div className='mx-auto mt-2 mb-4 w-full p-2 rounded-2xl relative'>
-                  <div className='absolute flex items-center justify-between rounded-xl border w-[94%] p-2 border-gray-300'>
-                    <div className='flex items-center truncate'>
-                      <AiOutlineCheckCircle size={16} className='min-w-[16px]' />
-                      <span className='text-[11px] pl-1 truncate text-ellipsis'>
-                        {file ? file.name : ''}
-                      </span>
+                <div className='relative w-full rounded-lg p-4'>
+                  <div className='flex items-center justify-between'>
+                    <div className='flex items-center'>
+                      <AiOutlineCheckCircle size={16} className='text-green-500' />
+                      <span className='ml-2 text-sm truncate'>{file ? file.name : ''}</span>
                     </div>
-                    <button onClick={discardVideo} disabled={uploading} className={`text-[11px] ml-6 font-semibold ${uploading && 'select-none'}`}>
+                    <button
+                      onClick={discardVideo}
+                      disabled={uploading}
+                      className='text-sm text-red-500'
+                    >
                       Change
                     </button>
                   </div>
-                  <div className='mt-12'>
-                    <div className='mt-5'>
-                      <div className='flex items-center justify-between'>
-                        <span className='mb-1 text-[15px]'>Description</span>
-                        <span className='text-gray-400 text-[12px]'>{caption.length}/150</span>
-                      </div>
-                      <input
-                        maxLength={150}
-                        type='text'
-                        disabled={uploading}
-                        className={`border text-[12px] p-2.5 rounded-md w-full focus:outline-none ${uploading && 'select-none border-none cursor-wait'}`}
-                        value={caption}
-                        onChange={e => setCaption(e.target.value)}
+                  <div className='w-full h-full flex absolute -z-20'>
+                    <div className='w-full relative justify-center flex'>
+                      <video
+                        className='w-[100%] h-64 object-fill opacity-30 max-sm:hidden right-6 max-sm:blur-none blur-2xl absolute'
+                        src={fileDisplay}
                       />
                     </div>
-                    <div className='flex gap-3'>
-                      <button
-                        onClick={discard}
-                        disabled={uploading}
-                        className={`px-4 w-full py-2.5 mt-8 border text-[16px] hover:bg-gray-100 rounded-sm ${uploading && 'select-none bg-gray-100/20'}`}
-                      >
-                        {uploading ? <BiLoaderCircle className='animate-spin ml-5' color='#000000' size={25} /> : 'Discard'}
-                      </button>
-                      <button
-                        onClick={postVideo}
-                        disabled={uploading}
-                        className={`px-4 w-full py-2.5 mt-8 border text-[16px] text-white bg-[#f02c56] rounded-sm ${uploading && 'bg-pink-500/20 select-none cursor-wait'}`}
-                      >
-                        {uploading ? <BiLoaderCircle className='animate-spin ml-5' color='#ffffff' size={25} /> : 'Post'}
-                      </button>
+                  </div>
+                  <video controls className='w-full mt-4 rounded h-48'>
+                    <source src={fileDisplay} type='video/mp4' />
+                    Your browser does not support the video tag.
+                  </video>
+                  <div className='mt-4'>
+                    <div className='flex justify-between items-center mb-2'>
+                      <span className='text-sm'>Description</span>
+                      <span className='text-xs text-gray-400'>{caption.length}/150</span>
                     </div>
+                    <input
+                      maxLength={150}
+                      type='text'
+                      disabled={uploading}
+                      className='w-full p-2 border rounded-md bg-transparent text-sm outline-none'
+                      value={caption}
+                      onChange={e => setCaption(e.target.value)}
+                    />
+                  </div>
+                  <div className='flex gap-3 mt-4'>
+                    <button
+                      onClick={discard}
+                      disabled={uploading}
+                      className={`
+                        py-2
+                        flex-1
+                        border
+                        rounded-md
+                        text-center
+                        ${uploading
+                          ? 'bg-gray-100'
+                          : 'hover:bg-gray-50 dark:hover:bg-gray-50/20'
+                        }`}
+                    >
+                      {uploading ? <BiLoaderCircle className='animate-spin mx-auto' size={20} /> : 'Discard'}
+                    </button>
+                    <button
+                      onClick={postVideo}
+                      disabled={uploading}
+                      className={`flex-1 py-2 bg-red-500 text-white rounded-md text-center ${uploading ? 'bg-red-300 cursor-wait' : 'hover:bg-red-600'}`}
+                    >
+                      {uploading ? <BiLoaderCircle className='animate-spin mx-auto' size={20} /> : 'Post'}
+                    </button>
                   </div>
                 </div>
                 )}
           </div>
+
           )
         : (
           <Loader />

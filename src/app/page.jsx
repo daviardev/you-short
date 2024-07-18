@@ -1,9 +1,9 @@
 'use client'
 
-import Loader from '@/components/Load'
-
 import useSession from '@/hooks/useSession'
-import FeedVideos from '@/components/FeedVideos'
+
+import Loader from '@/components/Utils/Load'
+import FeedVideos from '@/components/Video/FeedVideos'
 
 export default function Home () {
   const { session } = useSession()

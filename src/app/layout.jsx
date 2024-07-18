@@ -1,40 +1,26 @@
-import Footer from '@/components/Footer'
-import Header from '@/components/Header'
+import { Montserrat } from 'next/font/google'
 
-import { DynamicIslandProvider } from '@/context/DynamicIslandProvider'
+import MainLayout from '@/components/Layout/MainLayout'
 
 import '@/styles/globals.css'
 
+const font = Montserrat({
+  subsets: ['latin'],
+  display: 'swap'
+})
+
 export const metadata = {
-  title: 'TikTok - Make Your Day',
-  description: 'TikTok Clone Firebase NextJS'
+  title: "You'Short | App for view shorts videos",
+  description: "You'Short make in NextJS"
 }
 
 export default function RootLayout ({ children }) {
   return (
-    <html lang='en'>
+    <html lang='en' className={font.className}>
       <body>
-        <DynamicIslandProvider>
-          <div className='shadow-filter'>
-            <main className='flex bg-[url(/images/iphone.webp)] bg-no-repeat bg-contain w-[316px] h-[630px] relative'>
-              <section className='w-full rounded-[32px] flex gap-3 flex-col relative px-1.5 py-4 m-6'>
-                <div className='absolute bg-white inset-0 -z-10 rounded-[32px]' />
-                <Header />
-                <div className='relative w-full h-full mx-auto my-0'>
-                  <article
-                    className='absolute inset-0 w-full h-full z-20 overflow-y-scroll overflow-hidden'
-                    style={{
-                      scrollSnapType: 'y mandatory'
-                    }}
-                  >
-                    {children}
-                  </article>
-                </div>
-                <Footer />
-              </section>
-            </main>
-          </div>
-        </DynamicIslandProvider>
+        <MainLayout>
+          {children}
+        </MainLayout>
       </body>
     </html>
   )

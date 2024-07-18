@@ -1,9 +1,9 @@
 'use client'
 
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useRef } from 'react'
 import { useParams } from 'next/navigation'
 
-import VideoPlayer from '@/components/VideoPlayer'
+import VideoPlayer from '@/components/Video/VideoPlayer'
 import { useDynamicIsland } from '@/context/DynamicIslandProvider'
 
 import { db } from '@/firebase'
@@ -14,6 +14,8 @@ export default function VideoPage () {
   const [video, setVideo] = useState(null)
 
   const { id } = useParams()
+
+  const scrollRef = useRef()
 
   useEffect(() => {
     const fetchVideo = async () => {
@@ -46,12 +48,22 @@ export default function VideoPage () {
   }
 
   if (video === null) {
-    return <div>Video not found.</div>
+    return showError('Video not found')
   }
 
   return (
-    <div className='relative w-full h-full snap-center'>
-      <VideoPlayer {...video} videoId={video.id} />
-    </div>
+    <>
+      <section
+        ref={scrollRef}
+        className='flex flex-[1_1] flex-col sm:pl-20 pt-10 scroll-pt-10 max-sm:items-center'
+      >
+        <VideoPlayer
+          key={video.id}
+          videoId={video.id}
+          scrollRef={scrollRef}
+          {...video}
+        />
+      </section>
+    </>
   )
 }
