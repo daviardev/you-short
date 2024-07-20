@@ -2,6 +2,10 @@ import Button from '@/components/Utils/Button'
 
 import { TbError404 } from 'react-icons/tb'
 
+export const metadata = {
+  title: 'You\'Short • Not found'
+}
+
 export default function NotFound () {
   return (
     <section className='container flex flex-col mx-auto pt-12 my-24 text-center'>

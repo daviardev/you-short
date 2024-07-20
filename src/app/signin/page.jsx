@@ -5,6 +5,10 @@ import { getServerSession } from 'next-auth'
 
 import AuthButton from '@/components/Utils/AuthButton'
 
+export const metadata = {
+  title: 'You\'Short • Signin'
+}
+
 export default async function SignIn () {
   const session = await getServerSession()
   const providers = await getProviders()

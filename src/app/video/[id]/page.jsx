@@ -41,7 +41,11 @@ export default function VideoPage () {
     }
 
     fetchVideo()
-  }, [id])
+  }, [id, showError])
+
+  useEffect(() => {
+    if (video) document.title = `You'Short | ${video.description} @${video.author}`
+  }, [video])
 
   if (!id) {
     return <div>No ID provided in URL.</div>

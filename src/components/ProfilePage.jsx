@@ -37,9 +37,13 @@ export default function Profile ({ userId }) {
         const userRef = doc(db, 'users', uid)
         const userDoc = await getDoc(userRef)
 
-        userDoc.exists()
-          ? setUserProfile(userDoc.data())
-          : showError('User not found')
+        if (userDoc.exists()) {
+          const userData = userDoc.data()
+          setUserProfile(userData)
+          document.title = `You'Short • @${userData.tag}`
+        } else {
+          showError('User not found')
+        }
       }
     }
 

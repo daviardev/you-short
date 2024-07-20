@@ -10,7 +10,7 @@ const font = Montserrat({
 })
 
 export const metadata = {
-  title: "You'Short | App for view shorts videos",
+  title: 'You\'Short • App for view shorts videos',
   description: "You'Short make in NextJS"
 }
 

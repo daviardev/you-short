@@ -1,6 +1,6 @@
 'use client'
 
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 
 import { AiOutlineCheckCircle } from 'react-icons/ai'
 import { BiCloudUpload, BiLoaderCircle } from 'react-icons/bi'
@@ -16,6 +16,8 @@ import { ref, uploadBytes, getDownloadURL } from 'firebase/storage'
 
 import { useDynamicIsland } from '@/context/DynamicIslandProvider'
 
+const MAX_FILE_SIZE = 15
+
 export default function Upload () {
   const [caption, setCaption] = useState('')
   const [fileDisplay, setFileDisplay] = useState('')
@@ -30,11 +32,20 @@ export default function Upload () {
 
   const validateFile = file => {
     const validTypes = ['video/mp4']
-    if (file && validTypes.includes(file.type)) {
-      return true
+    const isValidType = validTypes.includes(file.type)
+    const isValidSize = file.size <= MAX_FILE_SIZE * 1024 * 1024
+
+    if (!isValidType) {
+      showError('Only MP4 files')
+      return false
     }
-    showError('Only MP4 files')
-    return false
+
+    if (!isValidSize) {
+      showError(`File size exceed ${MAX_FILE_SIZE} MB`)
+      return false
+    }
+
+    return true
   }
 
   const onChange = e => {
@@ -101,7 +112,7 @@ export default function Upload () {
       setUploading(false)
       discard()
     } catch (error) {
-      showError('Error uploading video', error)
+      showError(error)
     } finally {
       discard()
       setUploading(false)
@@ -130,6 +141,10 @@ export default function Upload () {
     }
   }
 
+  useEffect(() => {
+    document.title = 'You\'Short • Upload'
+  }, [])
+
   return (
     <>
       {session
@@ -155,11 +170,11 @@ export default function Upload () {
                     p-2
                     border-2
                     border-dashed
-                  border-gray-300
+                    border-gray-300
                     rounded-xl
                     cursor-pointer
-                  hover:bg-gray-50
-                  dark:hover:bg-gray-50/20
+                      hover:bg-gray-50
+                      dark:hover:bg-gray-50/20
                   '
                 >
                   <BiCloudUpload
@@ -168,6 +183,7 @@ export default function Upload () {
                   />
                   <p className='text-sm'>Select the video to load</p>
                   <p className='text-xs text-gray-500'>Or drag and drop file</p>
+                  <p className='text-xs text-gray-500'>Max size file 15 MB</p>
                   <label
                     htmlFor='fileInput'
                     className='mt-2 py-1 px-3 bg-red-500 text-white text-sm rounded-full cursor-pointer'
@@ -188,7 +204,10 @@ export default function Upload () {
                 <div className='relative w-full rounded-lg p-4'>
                   <div className='flex items-center justify-between'>
                     <div className='flex items-center'>
-                      <AiOutlineCheckCircle size={16} className='text-green-500' />
+                      <AiOutlineCheckCircle
+                        size={16}
+                        className='text-green-500'
+                      />
                       <span className='ml-2 text-sm truncate'>{file ? file.name : ''}</span>
                     </div>
                     <button
@@ -240,12 +259,27 @@ export default function Upload () {
                           : 'hover:bg-gray-50 dark:hover:bg-gray-50/20'
                         }`}
                     >
-                      {uploading ? <BiLoaderCircle className='animate-spin mx-auto' size={20} /> : 'Discard'}
+                      {uploading
+                        ? <BiLoaderCircle
+                            size={20}
+                            className='animate-spin mx-auto'
+                          />
+                        : 'Discard'}
                     </button>
                     <button
                       onClick={postVideo}
                       disabled={uploading}
-                      className={`flex-1 py-2 bg-red-500 text-white rounded-md text-center ${uploading ? 'bg-red-300 cursor-wait' : 'hover:bg-red-600'}`}
+                      className={`
+                        flex-1
+                        py-2
+                        bg-red-500
+                        text-white
+                        rounded-md
+                        text-center
+                        ${uploading
+                          ? 'bg-red-300 cursor-wait'
+                          : 'hover:bg-red-600'}
+                        `}
                     >
                       {uploading ? <BiLoaderCircle className='animate-spin mx-auto' size={20} /> : 'Post'}
                     </button>
