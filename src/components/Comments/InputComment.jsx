@@ -24,7 +24,7 @@ export default function CommentInput ({ onAddComment }) {
   }
 
   return (
-    <div className='relative flex w-full'>
+    <div className='relative flex w-full border-t'>
       {!uploading
         ? (
           <>
