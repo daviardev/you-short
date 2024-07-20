@@ -31,7 +31,7 @@ export default async function SignIn () {
       '
       >
         <form className='flex flex-col w-full h-full pb-6 text-center'>
-          <h3 className='mb-3 text-4xl font-extrabold text-[var(--text-color)]'>Sign In</h3>
+          <h3 className='mb-3 text-4xl font-extrabold'>Sign In</h3>
           <p className='mb-4 text-gray-700'>To share your momments</p>
           <AuthButton />
         </form>
