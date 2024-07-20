@@ -47,7 +47,7 @@ export default function ReplyComment ({ author, avatar, comment, commentId, vide
         </Link>
         <div className='flex-1 flex-col'>
           <div className='flex items-center'>
-            <span className='mr-1 text-xs font-bold'>{author}</span>
+            <Link href={`/user/${commenterId}`} className='mr-1 text-xs font-bold'>{author}</Link>
             <time
               title={timestampFormated}
               className='text-[10px] leading-[15px] text-gray-400'

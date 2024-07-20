@@ -92,7 +92,7 @@ export default function VideoPlayer ({ likes, comments, shares, author, descript
 
   return (
     <>
-      <div className='flex items-center justify-center mb-[2.6rem] snap-start last:pb-40'>
+      <div className='flex items-center justify-center mb-[2.6rem] snap-start max-sm:last:pb-40'>
         <div className='relative flex justify-center'>
           <div className='w-full h-full flex absolute -z-20'>
             <div className='w-full relative justify-center flex'>
@@ -125,7 +125,7 @@ export default function VideoPlayer ({ likes, comments, shares, author, descript
                 invisible
                 p-4
                 w-full
-                z-50
+                z-30
                 flex
                 justify-between
                 box-border

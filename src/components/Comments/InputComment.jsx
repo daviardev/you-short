@@ -24,7 +24,7 @@ export default function CommentInput ({ onAddComment }) {
   }
 
   return (
-    <div className='relative flex h-10 w-full'>
+    <div className='relative flex w-full'>
       {!uploading
         ? (
           <>
@@ -36,7 +36,7 @@ export default function CommentInput ({ onAddComment }) {
                 right-1
                 top-1
                 rounded-full
-                active:bg-pink-500
+                active:bg-red-500
                 py-2
                 px-4
                 text-center
@@ -47,8 +47,8 @@ export default function CommentInput ({ onAddComment }) {
                 shadow-md
                 transition-all
                 hover:shadow-xl
-                bg-[rgb(254,42,84)]
-                ${!newComment && 'bg-pink-500/20 active:bg-pink-500/20'}
+                bg-red-500
+                ${!newComment && 'bg-red-500/20 active:bg-red-500/60'}
               `}
               onClick={handleAddComment}
             >
@@ -72,6 +72,7 @@ export default function CommentInput ({ onAddComment }) {
                 text-sm
                 bg-transparent
                 rounded-sm
+                placeholder:text-[var(--text-color)]
                 font-normal
                 outline
                 outline-0

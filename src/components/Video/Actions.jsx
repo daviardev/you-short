@@ -120,7 +120,20 @@ export default function Actions ({ likes, shares, author, videoId, onShowComment
   }
 
   return (
-    <aside className={`flex flex-col self-end p-4 text-[2rem] max-sm:absolute max-sm:-right-4 max-sm:bottom-32 max-sm:text-white ${moveAction ? 'absolute right-[56%] bottom-32' : ''}`}>
+    <aside className={`
+      flex
+      p-4
+      flex-col
+      self-end
+      text-[2rem]
+      max-sm:absolute
+      max-sm:-right-4
+      max-sm:bottom-32
+    max-sm:text-white
+      ${moveAction
+      ? 'flex absolute left-[30%] bottom-32 text-white'
+      : ''}`}
+    >
       <div className='*:flex *:flex-col *:mt-2 *:items-center *:justify-center'>
         <div>
           <button
@@ -129,12 +142,34 @@ export default function Actions ({ likes, shares, author, videoId, onShowComment
           >
             {userHasLiked
               ? (
-                <span className='text-red-500 animate-[like_.3s_ease-in_forwards] bg-red-500/10 rounded-full w-11 h-11 flex items-center justify-center mt-0.5'>
+                <span className='
+                  w-11
+                  h-11
+                  flex
+                  mt-0.5
+                  items-center
+                  rounded-full
+                text-red-500
+                bg-red-500/10
+                  justify-center
+                  animate-[like_.3s_ease-in_forwards]
+                '
+                >
                   <IoMdHeart />
                 </span>
                 )
               : (
-                <span className='animate-[unlike_.17s_ease-in_reverse_forwards] rounded-full w-11 h-11 flex items-center justify-center mt-0.5'>
+                <span className='
+                  w-11
+                  h-11
+                  flex
+                  mt-0.5
+                  items-center
+                  rounded-full
+                  justify-center
+                  animate-[unlike_.17s_ease-in_reverse_forwards]
+                '
+                >
                   <IoIosHeartEmpty />
                 </span>
                 )}

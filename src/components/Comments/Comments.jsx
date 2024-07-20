@@ -87,15 +87,13 @@ export default function Comments ({ onHide, videoId }) {
   return (
     <>
       <div className='
-        absolute
         w-[435px]
-        mr-10
+        p-6
+        rounded-r-lg
+        max-sm:rounded-xl
+        max-sm:border
         max-sm:w-full
         h-full
-        bg-[var(--bg)]
-        border
-        shadow-xl
-        rounded-xl
         z-40
         max-sm:absolute
         max-sm:mr-0
@@ -103,13 +101,13 @@ export default function Comments ({ onHide, videoId }) {
       >
         <button
           onClick={onHide}
-          className='w-4 h-4 absolute right-3 top-3.5 flex justify-center items-center z-50'
+          className='w-4 h-4 absolute right-3 top-0 flex justify-center items-center z-50'
         >
           <IoClose />
         </button>
-        <div className='overflow-auto pt-10 px-0 pb-0'>
+        <div className='overflow-auto px-0 pb-0'>
           <div className='flex flex-col items-center text-center h-[calc(73vh-40px)]'>
-            <p className='font-bold text-xs h-10 leading-12 flex justify-center text-center absolute top-3 left-0 w-full'>
+            <p className='font-bold text-xs flex justify-center absolute top-0 max-sm:left-0 left-30 w-full'>
               {commentsFormat} comments
             </p>
             <div

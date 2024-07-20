@@ -147,8 +147,8 @@ export default function CommentCard ({
   }
 
   return (
-    <div className='mb-4'>
-      <div className='flex items-start mb-2.5 relative overscroll-contain text-center'>
+    <>
+      <div className='flex items-start relative overscroll-contain text-center mb-5'>
         <Link href={`/user/${commenterId}`} className='flex-[0_0_32px] mr-3'>
           <span className='block w-full h-full relative align-middle'>
             <Image
@@ -156,14 +156,14 @@ export default function CommentCard ({
               alt={author}
               width={100}
               height={100}
-              className='w-8 h-8 object-cover border border-white rounded-full'
+              className='w-8 h-8 object-cover rounded-full'
             />
           </span>
         </Link>
         <div className='flex-1 flex flex-col items-start'>
           <div className='flex items-center'>
             <Link href={`/user/${commenterId}`} className='mr-1 text-sm font-bold'>{author}</Link>
-            <time title={timestampFormated} className='text-xs leading-[15px] text-gray-400'>{timeago}</time>
+            <time title={timestampFormated} className='text-xs leading-[15px] dark:text-gray-400 text-gray-800'>{timeago}</time>
           </div>
           <p
             style={{
@@ -173,10 +173,10 @@ export default function CommentCard ({
           >
             {comment}
           </p>
-          <div className='flex items-center mt-1'>
+          <div className='flex items-center mt-1 text-xs dark:text-gray-200 text-gray-800'>
             <button
               onClick={handleLike}
-              className='mr-1.5 flex items-center text-xs text-gray-400 focus:outline-none'
+              className='mr-1.5 flex items-center '
             >
               {userHasLiked
                 ? (
@@ -193,7 +193,7 @@ export default function CommentCard ({
             </button>
             <button
               onClick={toggleReplyInput}
-              className='mr-1.5 text-xs text-gray-400 focus:outline-none'
+              className='mr-1.5'
             >
               Reply
             </button>
@@ -201,7 +201,6 @@ export default function CommentCard ({
             {replies.length > 0 && (
               <button
                 onClick={toggleShowReplies}
-                className='text-xs text-gray-400 focus:outline-none'
               >
                 {showReplies ? 'Hide Replies' : `View ${replies.length} Replies`}
               </button>
@@ -291,6 +290,6 @@ export default function CommentCard ({
           ))}
         </div>
       )}
-    </div>
+    </>
   )
 }
