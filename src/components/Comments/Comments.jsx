@@ -88,6 +88,8 @@ export default function Comments ({ onHide, videoId }) {
     <>
       <div className='
         w-[435px]
+        max-sm:bg-[var(--bg)]
+        max-sm:border
         p-6
         rounded-r-lg
         max-sm:rounded-xl
