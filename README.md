@@ -3,7 +3,7 @@
 # First, clone the project:
 
 ```bash
-git clone https://github.com/daviardev/tiktok-clone.git
+git clone https://github.com/daviardev/you-short.git
 
 ```
 
