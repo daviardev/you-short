@@ -203,7 +203,7 @@ export default function Upload () {
               : (
                 <div className='relative w-full rounded-lg p-4'>
                   <div className='flex items-center justify-between'>
-                    <div className='flex items-center'>
+                    <div className='flex items-center w-full'>
                       <AiOutlineCheckCircle
                         size={16}
                         className='text-green-500'
