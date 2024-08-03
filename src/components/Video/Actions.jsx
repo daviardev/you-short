@@ -129,10 +129,10 @@ export default function Actions ({ likes, shares, author, videoId, onShowComment
       max-sm:absolute
       max-sm:-right-4
       max-sm:bottom-32
-    max-sm:text-white
+      max-sm:text-white
       ${moveAction
-      ? 'flex absolute left-[30%] bottom-32 text-white'
-      : ''}`}
+        ? 'flex absolute left-[30%] bottom-32 text-white'
+        : ''}`}
     >
       <div className='*:flex *:flex-col *:mt-2 *:items-center *:justify-center'>
         <div>

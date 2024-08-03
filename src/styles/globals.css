@@ -5,101 +5,106 @@
 /* Automatic Dark and Ligth mode */
 /* ------------------------------------ */
 :root {
-    --bg: #ffffff;
-    --text-color: #000000;
-    --button: #e5e7eb;
+  --bg: #ffffff;
+  --text-color: #000000;
+  --button: #e5e7eb;
 }
 
 @media (prefers-color-scheme: dark) {
-    :root {
-        --bg: #0c0d10;
-        --text-color: #ffffff;
-        --button: #15161c;
-    }
+  :root {
+    --bg: #0c0d10;
+    --text-color: #ffffff;
+    --button: #15161c;
+  }
 }
+
 /* ------------------------------------ */
 
 
 /* Default styles */
 /* ------------------------------------ */
 * {
-    margin: 0;
-    box-sizing: border-box;
-    transition: all .1s;
+  margin: 0;
+  box-sizing: border-box;
+  transition: all .1s;
 }
 
 body {
-    margin: 0;
-    overflow: hidden;
-    background: var(--bg);
-    color: var(--text-color);
+  margin: 0;
+  background: var(--bg);
+  color: var(--text-color);
 }
+
 /* ------------------------------------ */
 
 
 /* Hide scrollbar in Feed component */
 /* ------------------------------------ */
 .feed-container::-webkit-scrollbar {
-    @apply hidden;
+  @apply hidden;
 }
+
 /* ------------------------------------ */
 
 
 /* Button up and down control */
 /* ------------------------------------ */
 .button-control {
-    @apply w-14 h-14 flex items-center justify-center text-2xl cursor-pointer backdrop-blur-[20px] rounded-full bg-[var(--button)] hover:bg-[#63646a4f] mt-20;
+  @apply w-14 h-14 flex items-center justify-center text-2xl cursor-pointer backdrop-blur-[20px] rounded-full bg-[var(--button)] hover:bg-[#63646a4f] mt-20;
 }
+
 /* ------------------------------------ */
 
 
 /* Video */
 /* ------------------------------------ */
 video {
-    width: 100%;
-    height: 100%;
+  width: 100%;
+  height: 100%;
 }
 
-.video:hover > .controls {
-    opacity: 1;
-    visibility: visible;
-    transform: translateY(0);
-  }
+.video:hover>.controls {
+  opacity: 1;
+  visibility: visible;
+  transform: translateY(0);
+}
 
-  .video:hover > .footer {
-    background: rgba(0, 0, 0, 0.7);
-    backdrop-filter: blur(3px);
-  }
+.video:hover>.footer {
+  background: rgba(0, 0, 0, 0.7);
+  backdrop-filter: blur(3px);
+}
+
 /* ------------------------------------ */
 
 
 /* Like and unlike animation */
 /* ------------------------------------ */
 @keyframes like {
-    0% {
-        transform: scale(0);
-    }
+  0% {
+    transform: scale(0);
+  }
 
-    50% {
-        transform: scale(1.1);
-    }
+  50% {
+    transform: scale(1.1);
+  }
 
-    100% {
-        transform: scale(1);
-    }
+  100% {
+    transform: scale(1);
+  }
 }
 
 @keyframes unlike {
-    0% {
-        transform: scale(1);
-    }
+  0% {
+    transform: scale(1);
+  }
 
-    50% {
-        transform: scale(.5);
-    }
+  50% {
+    transform: scale(.5);
+  }
 
-    100% {
-        transform: scale(1);
-    }
+  100% {
+    transform: scale(1);
+  }
 }
+
 /* ------------------------------------ */

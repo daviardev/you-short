@@ -2,11 +2,13 @@
 
 import Link from 'next/link'
 import Image from 'next/image'
-
 import { useState, useEffect, useRef } from 'react'
 
 import Loader from '@/components/Utils/Load'
 import NotVideosUser from '@/components/Utils/NotVideosUser'
+
+import { IoMdHeartEmpty } from 'react-icons/io'
+import { IoChatbubblesOutline, IoCopyOutline, IoLogOutOutline } from 'react-icons/io5'
 
 import useSession from '@/hooks/useSession'
 import useNumberFormatter from '@/hooks/useNumberFormatter'
@@ -20,9 +22,8 @@ export default function Profile ({ userId }) {
   const { showError } = useDynamicIsland()
 
   const [videos, setVideos] = useState([])
-
   const [totalLikes, setTotalLikes] = useState(0)
-
+  const [totalComments, setTotalComments] = useState({})
   const [userProfile, setUserProfile] = useState(null)
 
   const { session, logout } = useSession()
@@ -32,11 +33,9 @@ export default function Profile ({ userId }) {
   useEffect(() => {
     const fetchUserProfile = async () => {
       const uid = userId || session?.user?.uid
-
       if (uid) {
         const userRef = doc(db, 'users', uid)
         const userDoc = await getDoc(userRef)
-
         if (userDoc.exists()) {
           const userData = userDoc.data()
           setUserProfile(userData)
@@ -54,9 +53,16 @@ export default function Profile ({ userId }) {
         const querySnapshot = await getDocs(q)
         const userVideos = querySnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }))
         setVideos(userVideos)
-
         const totalLikes = userVideos.reduce((acc, video) => acc + (video.likes || 0), 0)
         setTotalLikes(totalLikes)
+
+        const commentsCount = {}
+        for (const video of userVideos) {
+          const commentRef = collection(db, 'videos', video.id, 'comments')
+          const commentSnapshot = await getDocs(commentRef)
+          commentsCount[video.id] = commentSnapshot.size
+        }
+        setTotalComments(commentsCount)
       }
     }
 
@@ -72,104 +78,83 @@ export default function Profile ({ userId }) {
   if (!userProfile) return <Loader />
 
   return (
-    <section className='lg:w-8/12 lg:mx-auto mt-8 w-full'>
-      <header className='flex flex-wrap items-center p-4 md:py-8'>
-        <div className='md:w-3/12 md:ml-16'>
-          <Image
-            width={100}
-            height={100}
-            className='
-              w-20
-              h-20
-              md:w-40
-              md:h-40
-              object-cover
-              rounded-full
-              border-2
-              border-white
-              p-1
-            '
-            src={userProfile.image}
-            alt={userProfile.name}
-          />
-        </div>
-
-        <div className='w-8/12 md:w-7/12 ml-4'>
-          <div className='md:flex md:flex-wrap md:items-center mb-4'>
-            <h3 className='text-3xl inline-block font-semibold md:mr-2 mb-2 sm:mb-0'>{userProfile.name}</h3>
-            {session?.user?.uid === userId && (
-              <button
-                onClick={logout}
-                type='button'
-                className='bg-red-500 p-2 text-white font-semibold text-sm rounded block text-center sm:inline-block'
-              >
-                Log out
-              </button>
-            )}
+    <>
+      <section className='w-full max-w-4xl mx-auto px-4 md:px-5'>
+        <header className='flex items-center gap-6 md:py-8'>
+          <div className='flex-shrink-0'>
+            <span className='w-20 h-20 md:w-24 md:h-24'>
+              <Image
+                src={userProfile.image}
+                alt={userProfile.tag}
+                width={100}
+                height={100}
+                className='w-full h-full rounded-full border-2 p-1'
+              />
+            </span>
           </div>
-
-          <ul className='hidden md:flex space-x-8 mb-4'>
-            <li>
-              <span className='font-semibold'>{total}</span>
-              {' '} likes
-            </li>
-
-            <li>
-              <span className='font-semibold'>0</span>
-              {' '} followers
-            </li>
-            <li>
-              <span className='font-semibold'>0</span>
-              {' '} following
-            </li>
-          </ul>
-
-        </div>
-      </header>
-      <div className='px-px md:px-3'>
-        <ul className='flex md:hidden justify-around space-x-8 border-t text-center p-2 leading-snug text-sm'>
-          <li>
-            <span className='font-semibold block'>{total}</span>
-            {' '} likes
-          </li>
-
-          <li>
-            <span className='font-semibold block'>0</span>
-            {' '} followers
-          </li>
-          <li>
-            <span className='font-semibold block'>0</span>
-            {' '} following
-          </li>
-        </ul>
-
-        <hr />
-
-        {!videos.length && <NotVideosUser />}
-        <div className='flex flex-wrap -mx-px md:-mx-3 mt-4'>
-
+          <div className='flex-1 grid gap-2'>
+            <div className='flex items-center gap-2'>
+              <h2 className='text-2xl md:text-3xl font-bold'>{userProfile.name}</h2>
+            </div>
+            <div className='flex items-center gap-4 font-semibold text-sm text-gray-600 dark:text-gray-300'>
+              @{userProfile.tag} {' '} • {' '} {total} likes {' '} • {' '} {videos.length} videos
+            </div>
+          </div>
+          <button
+            type='button'
+            onClick={session?.user?.uid === userId && logout}
+            className='bg-sky-50 flex text-black py-0 px-4 h-9 text-center items-center text-sm rounded-full font-bold hover:bg-gray-300'
+          >
+            {session?.user?.uid === userId
+              ? (
+                <>
+                  <IoLogOutOutline
+                    className='mr-2 -ml-1 h-4'
+                  />
+                  Log out
+                </>
+                )
+              : 'Report'}
+          </button>
+        </header>
+        {videos.length <= 0 && <NotVideosUser />}
+        <div className='grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6 mt-6 md:mt-8 mb-24'>
           {videos.map((video, index) => (
-            <div key={video.id} className='w-1/4 p-px md:px-3'>
-              <div className='text-white relative pb-[100%] md:mb-6'>
-                <Link href={`/video/${video.id}`}>
+            <div key={video.id} className='relative group bg-gray-100 rounded-lg overflow-hidden shadow hover:shadow-lg transition-shadow'>
+              <Link href={`/video/${video.id}`}>
+                <div className='relative'>
                   <video
                     src={video.src}
-                    ref={el => {
-                      videoRefs.current[index] = el
+                    ref={e => {
+                      videoRefs.current[index] = e
                     }}
                     loop
                     muted
                     controls={false}
-                    className='w-full h-full absolute left-0 top-0 object-cover rounded-lg aspect-video'
+                    className='w-full h-52 object-cover'
                     onMouseEnter={() => mouseEnter(index)}
                     onMouseLeave={() => mouseLeave(index)}
                   />
-                </Link>
-              </div>
+                  <div className='absolute bottom-0 left-0 right-0 bg-black bg-opacity-50 text-white p-4 opacity-0 group-hover:opacity-100 transition-opacity'>
+                    <h3 className='text-lg font-semibold' title={video.description}>{video.description}</h3>
+                    <div className='flex items-center text-base gap-4 mt-2 *:flex *:items-center *:gap-1'>
+                      <span>
+                        <IoMdHeartEmpty /> {video.likes}
+                      </span>
+                      <span>
+                        <IoChatbubblesOutline /> {totalComments[video.id] || 0}
+                      </span>
+                      <span>
+                        <IoCopyOutline />  {video.shares}
+                      </span>
+                    </div>
+                  </div>
+                </div>
+              </Link>
             </div>
           ))}
         </div>
-      </div>
-    </section>
+      </section>
+    </>
   )
 }
