@@ -131,7 +131,7 @@ export default function Profile ({ userId }) {
                     loop
                     muted
                     controls={false}
-                    className='w-full h-52 object-cover'
+                    className='w-full h-52 object-cover aspect-square hover:scale-110'
                     onMouseEnter={() => mouseEnter(index)}
                     onMouseLeave={() => mouseLeave(index)}
                   />
